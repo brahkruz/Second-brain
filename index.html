@@ -514,7 +514,9 @@ async function push(){
  }catch(e){syncError(e)}
  writing=false;if(again){again=false;push()}
 }
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&gh&&!dirty&&!writing&&Date.now()-lastPull>10000)pull()});
+function maybePull(){if(document.visibilityState==='visible'&&gh&&!dirty&&!writing&&Date.now()-lastPull>8000)pull()}
+document.addEventListener('visibilitychange',maybePull);addEventListener('pageshow',maybePull);addEventListener('focus',maybePull);
+setInterval(()=>{if(!document.querySelector('#ov.on'))maybePull()},45000);
 addEventListener('online',()=>{if(gh&&dirty)push()});
 
 /* ---------- generative art ---------- */
@@ -816,11 +818,14 @@ function openSettings(){
  <div class="fld"><label>Private data repo</label><input name="repo" value="${esc(g.repo)}" autocapitalize="off" autocorrect="off" required></div></div>
  <div class="fld"><label>Access token</label><input name="token" type="password" value="${esc(g.token)}" placeholder="github_pat_…" autocapitalize="off" autocorrect="off" required></div>
  <div class="btns">${gh?'<button type="button" class="btn danger" data-act="ghOff">Disconnect</button><button type="button" class="btn" data-act="ghPull">Sync now</button>':''}<span class="sp"></span><button class="btn pri">${gh?'Update':'Connect'}</button></div></form></div>
+ ${gh?`<div class="fld"><label>Link another device</label><p class="hint">Copies a private setup link. Send it to your phone (AirDrop, Messages to yourself, Notes) and open it there — it connects without retyping the token. Don’t share it with anyone else.</p><div class="btns" style="margin:0"><button type="button" class="btn" data-act="ghLink">Copy setup link</button></div></div>`:''}
  <div class="fld"><label>Backup</label><div class="btns" style="margin:0"><button class="btn" data-act="copyBackup">Copy backup to clipboard</button></div></div>
  <div class="fld"><label>Restore from backup</label><textarea id="imp" rows="4" placeholder="Paste a backup here"></textarea><div class="btns"><span class="sp"></span><button class="btn" data-act="import">Restore</button></div></div>
  <div class="fld"><label>Start fresh</label><div class="btns" style="margin:0"><button class="btn danger" data-act="wipe">Clear all sample content</button></div></div><div id="smsg" class="hint"></div>`);
  $('#ghf').onsubmit=async e=>{e.preventDefault();const fd=new FormData(e.target);
-  const next={owner:fd.get('owner').trim(),repo:fd.get('repo').trim(),token:fd.get('token').trim()};
+  const clean=s=>String(s||'').replace(/[^\x21-\x7E]/g,'');
+  const next={owner:clean(fd.get('owner')),repo:clean(fd.get('repo')),token:clean(fd.get('token'))};
+  if(location.protocol!=='https:'){$('#smsg').innerHTML='This copy of the app is opened from a file or preview, which can’t reach GitHub. Open your GitHub Pages link instead: <b>https://'+esc(next.owner||'your-name')+'.github.io/second-brain/</b>';return}
   $('#smsg').textContent='Checking…';
   try{const r=await fetch(`https://api.github.com/repos/${encodeURIComponent(next.owner)}/${encodeURIComponent(next.repo)}`,{headers:{Authorization:'Bearer '+next.token,Accept:'application/vnd.github+json'},cache:'no-store'});
    if(!r.ok){$('#smsg').textContent=r.status===401?'That token was rejected.':'Can’t reach that repo with this token. Check the username, repo name and the token’s repository access.';return}
@@ -828,7 +833,7 @@ function openSettings(){
    gh=next;try{localStorage.setItem(GH_KEY,JSON.stringify(gh))}catch(err){}
    closeSheet();await pull();
    if(!info.private)setTimeout(()=>alertSheet('Heads up: <b>'+esc(next.repo)+'</b> is a public repo, so anyone can read your data. Make it private in the repo’s Settings on GitHub.'),300);
-  }catch(err){$('#smsg').textContent='Could not reach GitHub. Check your connection.'}
+  }catch(err){$('#smsg').textContent='Could not reach GitHub ('+(err&&err.message||'network error')+'). If you’re on Wi-Fi or a VPN with content blocking, try mobile data — or use “Link another device” from your computer.'}
  };
 }
 function alertSheet(html){openSheet('Note',`<p class="hint" style="font-size:14px;color:var(--text)">${html}</p><div class="btns"><span class="sp"></span><button class="btn pri" data-act="close">OK</button></div>`)}
@@ -864,6 +869,7 @@ document.addEventListener('click',e=>{
   case 'settings':openSettings();break;
   case 'ghOff':gh=null;try{localStorage.removeItem(GH_KEY)}catch(err){}closeSheet();setSync('local','Saved on this device');break;
   case 'ghPull':closeSheet();pull();break;
+  case 'ghLink':{const url=location.origin+location.pathname+'#connect='+b64e(JSON.stringify(gh));navigator.clipboard.writeText(url).then(()=>$('#smsg').textContent='Setup link copied. Open it on your phone in Safari or Chrome.',()=>{$('#smsg').innerHTML='Copy was blocked — select and copy this link:<br><textarea rows="3" readonly onclick="this.select()">'+esc(url)+'</textarea>'});break}
   case 'pmode':pomo={mode:el.dataset.m,left:PM[el.dataset.m]*60,running:false,end:0};renderPomo();break;
   case 'pstart':ac();if(pomo.running){pomo.running=false}else{pomo.running=true;pomo.end=Date.now()+pomo.left*1000}renderPomo();break;
   case 'preset':pomo.running=false;pomo.left=PM[pomo.mode]*60;renderPomo();break;
@@ -882,6 +888,9 @@ let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(renderCal,2
 buildClock();tickClock();renderAll();setSync('local','Saved on this device');
 setInterval(()=>{tickClock();tickPomo()},1000);
 setInterval(renderTimeProg,60000);
+(function(){const m=location.hash.match(/^#connect=(.+)$/);if(!m)return;
+ try{const g=JSON.parse(b64d(decodeURIComponent(m[1])));if(g&&g.owner&&g.repo&&g.token){gh=g;localStorage.setItem(GH_KEY,JSON.stringify(gh));setDirty(false)}}catch(e){}
+ history.replaceState(null,'',location.pathname+location.search)})();
 if(gh)pull();
 </script>
 </body>
