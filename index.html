@@ -287,6 +287,25 @@ table.ht{border-collapse:separate;border-spacing:4px;width:100%}
 .toast{position:fixed;left:50%;top:22px;transform:translateX(-50%);background:linear-gradient(135deg,#ffb347,#e8392c);color:#fff;font-weight:700;padding:11px 18px;border-radius:99px;z-index:300;box-shadow:0 10px 30px rgba(232,57,44,.5);animation:pop .3s}
 @media(max-width:720px){.fitgrid{grid-template-columns:1fr 1fr}.fitgrid .ftile:first-child{grid-column:1/-1}.volcard{grid-template-columns:1fr}.fcard .gauge{width:128px}.fcard .big{font-size:27px}.tiles3 .big{font-size:18px}.tiles3 .fcard{padding:12px}.fcard{padding:14px}.fx .fh2{font-size:25px}.fchart{height:150px}.sheet.full{max-height:96vh}}
 
+/* streak fire */
+.firefx{position:fixed;inset:0;z-index:260;pointer-events:none;transition:opacity .7s ease}
+.firefx.out{opacity:0}
+.firefx::before{content:"";position:absolute;inset:0;background:radial-gradient(80% 50% at 50% 40%,rgba(8,3,2,.82),rgba(8,3,2,.6));animation:fade .35s}
+.firefx canvas{position:absolute;inset:0;width:100%;height:100%}
+.fglow{position:absolute;inset:0;background:radial-gradient(130% 65% at 50% 112%,rgba(255,110,30,var(--i)),rgba(210,25,10,calc(var(--i)*.55)) 42%,transparent 72%);animation:fglow .7s ease-in-out infinite alternate}
+@keyframes fglow{from{opacity:.7}to{opacity:1}}
+.fbadge{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);text-align:center;animation:fpop .65s cubic-bezier(.2,1.6,.4,1) both;text-shadow:0 4px 30px rgba(255,80,20,.85);width:92vw}
+@keyframes fpop{from{transform:translate(-50%,-50%) scale(.3);opacity:0}}
+.ff{font-size:clamp(44px,13vw,86px);line-height:1;letter-spacing:-.04em;display:inline-block;animation:fflick .22s ease-in-out infinite alternate}
+@keyframes fflick{to{transform:scale(1.07) translateY(-3px)}}
+.fn{font:700 clamp(32px,9vw,56px)/1.05 'Space Grotesk',sans-serif;color:#fff;margin-top:10px}
+.fh{font-size:16px;color:#ffe0cc;margin-top:8px;font-weight:600}
+.fm{font:italic 400 24px 'Instrument Serif',serif;color:#ffb38a;margin-top:4px}
+.firefx.shake{animation:fshake .45s ease-in-out 2}
+@keyframes fshake{0%,100%{transform:none}20%{transform:translate(-4px,2px)}40%{transform:translate(4px,-2px)}60%{transform:translate(-3px,-1px)}80%{transform:translate(3px,1px)}}
+@media(prefers-reduced-motion:reduce){.ff,.fglow,.firefx.shake{animation:none}}
+.streak{min-width:0!important;white-space:nowrap}
+
 /* dbs */
 .dbs .grp{padding:4px 0;border-bottom:1px solid var(--line)}
 .dbs .grp:last-child{border:0}
@@ -702,7 +721,7 @@ function renderHabits(){
  const t=today();const done=S.habits.filter(h=>h.log[t]).length;const pct=S.habits.length?done/S.habits.length*100:0;
  $('#habits').innerHTML=`<div class="hprog"><span>${done}/${S.habits.length}</span><div class="prog"><i style="width:${pct}%"></i></div><span>${Math.round(pct)}%</span></div>`+
  S.habits.map(h=>{const on=!!h.log[t];let w='';for(let i=6;i>=0;i--)w+=`<i class="${h.log[addDays(-i)]?'on':''}"></i>`;const s=streak(h);
-  return `<div class="hrow"><button class="chk ${on?'on':''}" data-act="habit" data-id="${h.id}" aria-label="Done"></button><button class="hn" data-act="edit" data-t="habit" data-id="${h.id}">${esc(h.emoji||'')} ${esc(h.name)}</button><div class="week7">${w}<span class="streak">${s?'🔥'+s:''}</span></div></div>`}).join('')+(S.habits.length?'':'<div class="empty">Add a habit to start a streak.</div>');
+  return `<div class="hrow"><button class="chk ${on?'on':''}" data-act="habit" data-id="${h.id}" aria-label="Done"></button><button class="hn" data-act="edit" data-t="habit" data-id="${h.id}">${esc(h.emoji||'')} ${esc(h.name)}</button><div class="week7">${w}<span class="streak">${s?flames(s)+s:''}</span></div></div>`}).join('')+(S.habits.length?'':'<div class="empty">Add a habit to start a streak.</div>');
 }
 function renderGoals(){
  const L=S.goals.filter(g=>(g.month||curMonth())===curMonth());
@@ -843,7 +862,7 @@ function openForm(t,id,opts={}){
 function openDb(t){
  const f=F[t];const L=S[f.coll];
  const label=x=>x.title||x.name||'Untitled';
- const sub=x=>t==='task'?`${x.status} · ${x.priority}${x.due?' · '+x.due:''}`:t==='project'?x.status:t==='goal'?`${x.current}/${x.target} · ${x.month}`:t==='media'?`${x.kind||''} · ${x.status}`:t==='tool'?domain(x.url):t==='track'?x.artist||'':t==='note'?rel(x.created):t==='habit'?`🔥 ${streak(x)} day streak`:'';
+ const sub=x=>t==='task'?`${x.status} · ${x.priority}${x.due?' · '+x.due:''}`:t==='project'?x.status:t==='goal'?`${x.current}/${x.target} · ${x.month}`:t==='media'?`${x.kind||''} · ${x.status}`:t==='tool'?domain(x.url):t==='track'?x.artist||'':t==='note'?rel(x.created):t==='habit'?`${flames(streak(x)||1)} ${streak(x)} day streak`:'';
  openSheet(f.name+(t==='media'?'':'s'),`<div class="btns" style="margin:0 0 10px"><span class="hint" style="margin:0">${L.length} item${L.length===1?'':'s'}</span><span class="sp"></span><button class="btn pri" data-act="new" data-t="${t}">+ New</button></div>`+
   (L.map(x=>`<button class="lrow" data-act="edit" data-t="${t}" data-id="${x.id}"><span class="em">${esc(x.emoji||'')}</span><span class="nm">${esc(label(x))}</span><span class="mt">${esc(sub(x))}</span></button>`).join('')||'<div class="empty">Empty.</div>'));
 }
@@ -1048,6 +1067,47 @@ function wfAction(a,el){const i=+el.dataset.i,d=wfDraft;if(!d)return;
   if(n)setTimeout(()=>{const t=document.createElement('div');t.className='toast';t.textContent=`🏆 ${n} new PR${n>1?'s':''}!`;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)},150)}
 }
 
+/* ---------- streak fire ---------- */
+const fireTier=n=>n>=30?5:n>=14?4:n>=7?3:n>=3?2:1;
+const flames=n=>'🔥'.repeat(fireTier(n));
+let fireRun=0,fireSprites=null;
+function makeSprites(){const cols=[[255,250,220],[255,220,120],[255,170,60],[255,110,30],[230,50,20],[150,20,10]];
+ return cols.map(([r,g,b])=>{const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d');const gr=x.createRadialGradient(32,32,0,32,32,32);
+  gr.addColorStop(0,`rgba(${r},${g},${b},1)`);gr.addColorStop(.4,`rgba(${r},${g},${b},.55)`);gr.addColorStop(1,`rgba(${r},${g},${b},0)`);x.fillStyle=gr;x.fillRect(0,0,64,64);return c})}
+function fireFX(h,n){
+ const tier=fireTier(n);
+ document.querySelectorAll('.firefx').forEach(e=>e.remove());cancelAnimationFrame(fireRun);
+ const msg=['','Streak continues!','Keep it burning!','A week strong 💪','Two weeks on fire!','Unstoppable.'][tier];
+ const wrap=document.createElement('div');wrap.className='firefx'+(tier>=4?' shake':'');
+ wrap.innerHTML=`<canvas></canvas><div class="fglow" style="--i:${(.3+tier*.12).toFixed(2)}"></div><div class="fbadge"><div class="ff">${'🔥'.repeat(tier)}</div><div class="fn">${n}-day streak!</div><div class="fh">${esc(h.emoji||'')} ${esc(h.name)}</div><div class="fm">${msg}</div></div>`;
+ document.body.appendChild(wrap);
+ try{navigator.vibrate&&navigator.vibrate(tier>=3?[40,50,90]:35)}catch(e){}
+ const total=1700+tier*300;
+ setTimeout(()=>wrap.classList.add('out'),total);
+ setTimeout(()=>{wrap.remove();cancelAnimationFrame(fireRun)},total+700);
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ if(!fireSprites)fireSprites=makeSprites();
+ const c=wrap.querySelector('canvas'),x=c.getContext('2d'),dpr=Math.min(2,devicePixelRatio||1),W=innerWidth,H=innerHeight;
+ c.width=W*dpr;c.height=H*dpr;x.scale(dpr,dpr);
+ const P=[],perSec=(70+tier*55)*Math.max(.6,W/420),reach=H*(.2+tier*.1);
+ const t0=performance.now();let last=t0,acc=0;
+ function spawn(){const ember=Math.random()<.08;const s=ember?2+Math.random()*3:14+Math.random()*(16+tier*7);const vy=ember?-(220+Math.random()*260):-(140+Math.random()*(120+tier*45));
+  P.push({x:Math.random()*W,y:H+s*.6,vx:(Math.random()-.5)*40,vy,s,ember,life:0,max:ember?1.6+Math.random():Math.min(2.2,(reach/-vy)*(.6+Math.random()*.7)),seed:Math.random()*6.28})}
+ function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;const el=now-t0;
+  x.globalCompositeOperation='source-over';x.clearRect(0,0,W,H);
+  if(el<total-200){acc+=perSec*dt;while(acc>=1){spawn();acc--}}
+  x.globalCompositeOperation='lighter';
+  for(let i=P.length-1;i>=0;i--){const p=P[i];p.life+=dt;const k=p.life/p.max;if(k>=1){P.splice(i,1);continue}
+   p.x+=p.vx*dt+Math.sin(now/170+p.seed)*(p.ember?1.4:.7);p.y+=p.vy*dt;p.vy*=p.ember?1:.995;
+   const r=p.ember?p.s:p.s*(1.15-k*.85);const si=p.ember?1:Math.min(5,1+Math.floor(k*5));
+   x.globalAlpha=p.ember?(1-k):(1-k)*(k<.1?k*10:1)*.5;
+   x.drawImage(fireSprites[si],p.x-r,p.y-r,r*2,r*2)}
+  x.globalAlpha=1;
+  if(el<total+700)fireRun=requestAnimationFrame(frame)}
+ fireRun=requestAnimationFrame(frame);
+}
+function maybeFire(h,k){if(!h.log[k])return;const n=streak(h);if(n>=2&&k>=addDays(-n))fireFX(h,n)}
+
 /* ---------- actions ---------- */
 let wipeArm=false;
 document.addEventListener('click',e=>{
@@ -1064,10 +1124,10 @@ document.addEventListener('click',e=>{
   case 'cycle':{const x=find('tasks');const o=['Not started','In progress','Done'];x.status=o[(o.indexOf(x.status)+1)%3];save();renderAll();break}
   case 'view':S.ui[el.dataset.k]=el.dataset.v;save();renderAll();break;
   case 'pickEmoji':{const fl=el.closest('.fld');fl.querySelector('.emoin').value=el.dataset.v;fl.querySelectorAll('.emogrid button').forEach(b=>b.classList.toggle('on',b===el));break}
-  case 'hcell':{const x=find('habits');const k=el.dataset.d;if(k>today())break;if(x.log[k])delete x.log[k];else x.log[k]=1;save();renderHabits();renderTracker();if(S.ui.calMode==='habits')renderCal();break}
+  case 'hcell':{const x=find('habits');const k=el.dataset.d;if(k>today())break;if(x.log[k])delete x.log[k];else x.log[k]=1;save();maybeFire(x,k);renderHabits();renderTracker();if(S.ui.calMode==='habits')renderCal();break}
   case 'trkview':S.ui.trackView=el.dataset.v;trkOff=0;save();renderTracker();break;
   case 'trknav':{const d=+el.dataset.d;trkOff=d===0?0:trkOff+d;renderTracker();break}
-  case 'habit':{const x=find('habits');const k=today();if(x.log[k])delete x.log[k];else x.log[k]=1;save();renderHabits();renderTracker();if(S.ui.calMode==='habits')renderCal();break}
+  case 'habit':{const x=find('habits');const k=today();if(x.log[k])delete x.log[k];else x.log[k]=1;save();maybeFire(x,k);renderHabits();renderTracker();if(S.ui.calMode==='habits')renderCal();break}
   case 'goal':{const x=find('goals');x.current=Math.max(0,(+x.current||0)+(+el.dataset.d));save();renderGoals();break}
   case 'rate':{const x=find('media');const v=+el.dataset.v;x.rating=x.rating===v?v-1:v;save();renderMedia();break}
   case 'area':openArea(id);break;
