@@ -321,6 +321,20 @@ table.ht{border-collapse:separate;border-spacing:4px;width:100%}
 .frow3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .macro{display:flex;height:6px;border-radius:4px;overflow:hidden;margin-top:8px;max-width:240px;background:#2a2523}
 .macro i{display:block;height:100%}
+/* collapse */
+.bh[data-act=collapse]{cursor:pointer;user-select:none;-webkit-user-select:none}
+.ctog{width:24px;height:24px;border-radius:7px;background:rgba(255,255,255,.08);display:grid;place-items:center;margin-left:auto;flex-shrink:0}
+.bh .sp~.ctog,.bh .add~.ctog{margin-left:2px}
+.ctog:hover{background:rgba(255,255,255,.16)}
+.ctog svg{width:14px;height:14px;transition:transform .2s}
+.block.collapsed .ctog svg{transform:rotate(-90deg)}
+.block.collapsed > :not(.bh){display:none!important}
+.block.collapsed > .bh{opacity:.85}
+.block.collapsed > .bh .add{display:none}
+.block > .bb{animation:fade .2s}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:#141212;border:1px solid var(--line);border-radius:11px;padding:3px;margin-bottom:14px}
+.seg button{padding:8px 6px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted)}
+.seg button.on{background:linear-gradient(135deg,#ff5a35,#c8170e);color:#fff}
 /* dbs */
 .dbs .grp{padding:4px 0;border-bottom:1px solid var(--line)}
 .dbs .grp:last-child{border:0}
@@ -911,6 +925,7 @@ function openSettings(){
  <div class="fld"><label>Access token</label><input name="token" type="password" value="${esc(g.token)}" placeholder="github_pat_…" autocapitalize="off" autocorrect="off" required></div>
  <div class="btns">${gh?'<button type="button" class="btn danger" data-act="ghOff">Disconnect</button><button type="button" class="btn" data-act="ghPull">Sync now</button>':''}<span class="sp"></span><button class="btn pri">${gh?'Update':'Connect'}</button></div></form></div>
  ${gh?`<div class="fld"><label>Link another device</label><p class="hint">Copies a private setup link. Send it to your phone (AirDrop, Messages to yourself, Notes) and open it there — it connects without retyping the token. Don’t share it with anyone else.</p><div class="btns" style="margin:0"><button type="button" class="btn" data-act="ghLink">Copy setup link</button></div></div>`:''}
+ <div class="fld"><label>Sections</label><div class="btns" style="margin:0"><button type="button" class="btn" data-act="colAll">Collapse all</button><button type="button" class="btn" data-act="expAll">Expand all</button></div></div>
  <div class="fld"><label>Backup</label><div class="btns" style="margin:0"><button class="btn" data-act="copyBackup">Copy backup to clipboard</button></div></div>
  <div class="fld"><label>Restore from backup</label><textarea id="imp" rows="4" placeholder="Paste a backup here"></textarea><div class="btns"><span class="sp"></span><button class="btn" data-act="import">Restore</button></div></div>
  <div class="fld"><label>Start fresh</label><div class="btns" style="margin:0"><button class="btn danger" data-act="wipe">Clear all sample content</button></div></div><div id="smsg" class="hint"></div>`);
@@ -1148,14 +1163,14 @@ function calHTML(){
  const wk=calDays(7).filter(d=>d.v>0),avg7=wk.length?wk.reduce((s,d)=>s+d.v,0)/wk.length:0;
  const items=f.calories.filter(c=>c.date===sel),prot=items.reduce((s,c)=>s+(+c.protein||0),0),carb=items.reduce((s,c)=>s+(+c.carbs||0),0),fat=items.reduce((s,c)=>s+(+c.fat||0),0),mk=prot*4+carb*4+fat*9;
  const dayName=sel===today()?'Today':sel===addDays(-1)?'Yesterday':parse(sel).toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});
- return `<div class="fh2"><span>Calorie intake</span><button class="mini" data-act="calAdd">+ Add food</button></div>
+ return `<div class="fh2"><span>Calorie intake</span><span style="display:flex;gap:6px"><button class="mini" data-act="calAdd" data-mode="food">+ Food</button><button class="mini" data-act="calAdd" data-mode="manual">+ Totals</button></span></div>
  <div class="fcard"><div class="gtop"><div style="min-width:0"><div class="lbl">${dayName}${sel!==today()?` · <button class="mini" style="padding:2px 8px" data-act="calDay" data-d="${today()}">Back to today</button>`:''}</div><div class="big">${fmt(tot,0)}<small>kcal</small></div>
  <div class="sub">${t?calLeft(tot,t):'<button class="mini" data-act="fitGoal">Set a daily target</button>'}</div>${mk?`<div class="sub">${fmt(prot,0)}g protein · ${fmt(carb,0)}g carbs · ${fmt(fat,0)}g fat</div><div class="macro" title="Protein / carbs / fat"><i style="width:${prot*400/mk}%;background:#ff6b3d"></i><i style="width:${carb*400/mk}%;background:#f5b950"></i><i style="width:${fat*900/mk}%;background:#8cb2ff"></i></div>`:''}</div>${t?gauge(tot/t*100,'of target',true):''}</div>
  <div class="tabs" style="margin:12px 0 6px">${[[7,'7D'],[14,'14D'],[30,'30D']].map(([k,l])=>`<button class="${calRange===k?'on':''}" data-act="calRange" data-v="${k}">${l}</button>`).join('')}<span style="flex:1"></span><span style="font-size:11px;color:var(--dim);align-self:center">Tap a bar to see that day</span></div>
  <div class="cchart">${calBars(days,t)}</div>
  <div class="exstats"><div><b>${fmt(avg7,0)}</b><span>7-day average</span></div><div><b>${t?logged.filter(d=>d.v<=t).length+'/'+logged.length:logged.length}</b><span>${t?'days on target':'days logged'}</span></div><div><b>${fmt(avg,0)}</b><span>${calRange}-day average</span></div></div>
  <div class="wins">${items.length?items.map(c=>`<button class="win" data-act="calEdit" data-id="${c.id}"><span style="color:var(--text);font-size:13.5px">${esc(c.label||'Food')}</span><span class="sets1" style="text-align:left">${c.food?esc(c.food):c.protein?fmt(c.protein,0)+' g protein':''}</span><b>${fmt(c.kcal,0)} kcal</b></button>`).join(''):`<div class="empty">Nothing logged ${sel===today()?'today':'this day'}.</div>`}
- <button class="newrow" data-act="calAdd" data-d="${sel}">+ Add food to ${sel===today()?'today':dayName}</button></div></div>`;
+ <button class="newrow" data-act="calAdd" data-mode="food" data-d="${sel}">+ Add food to ${sel===today()?'today':dayName}</button><button class="newrow" data-act="calAdd" data-mode="manual" data-d="${sel}">✏️ Enter ${sel===today()?'today’s':dayName+'’s'} calories & macros manually</button></div></div>`;
 }
 /* ---------- food database (per 100 g; typical USDA values, cooked where it is usually eaten cooked) ---------- */
 const FOODS_RAW=`Steak (sirloin)|steak;sirloin;beef steak;flank steak;filet;filet mignon;strip steak;new york strip;skirt steak;tri tip|250,26,0,15|sv=113
@@ -1357,29 +1372,45 @@ let cfManual=false;
 function nutRows(items,ai){if(!items.length)return '';const t=sumNut(items);const loose=!ai&&items.some(i=>i.loose);
  return `<div class="nrows">${items.map(i=>i.miss?`<div class="nrow miss"><span>“${esc(i.raw)}”</span><span>${sampleFn?'not in food list — try Claude ↓':'not in food list'}</span></div>`:`<div class="nrow"><span><b>${i.loose?'≈ ':''}${esc(i.name)}</b> <i>${ai?esc(i.raw):i.g+' g'+(i.approx?' (est.)':'')}${i.loose?` · closest match for “${esc(i.raw)}”`:''}</i></span><span>${fmt(i.kcal,0)} kcal · ${fmt(i.p,0)}P ${fmt(i.c,0)}C ${fmt(i.f,0)}F</span></div>`).join('')}
  ${loose&&sampleFn?'<div class="nrow miss"><span>≈ items are a rough match — Claude can estimate them more closely ↓</span></div>':''}<div class="nrow tot"><span>${ai?'✨ Estimated by Claude':'Total'}</span><span>${fmt(t.kcal,0)} kcal · ${fmt(t.p,0)}P ${fmt(t.c,0)}C ${fmt(t.f,0)}F</span></div></div>`}
-function openCalForm(id,back,date){const f=fit();const hr=new Date().getHours();
+function openCalForm(id,back,date,mode){const f=fit();const hr=new Date().getHours();
  const x=id?f.calories.find(c=>c.id===id):{date:date||today(),kcal:'',label:hr<11?'Breakfast':hr<15?'Lunch':hr<21?'Dinner':'Snack',protein:'',carbs:'',fat:'',food:''};if(!x)return;
- cfManual=!!id;
+ cfManual=!!id;cfEditing=!!id;
+ let lm='food';try{lm=localStorage.getItem('sbos_cfmode')||'food'}catch(e){}
+ const m0=id?(x.food?'food':'manual'):(mode||lm);
  const v=k=>x[k]===undefined||x[k]===null?'':x[k];
- openSheet(id?'Edit food':'Add calories',`<form id="cf">
- <div class="fld"><label>What did you eat?</label><textarea name="food" rows="2" placeholder="e.g. 4oz steak, 1 cup rice, 1 tbsp butter" autocomplete="off" autocapitalize="off">${esc(v('food'))}</textarea>
+ openSheet(id?'Edit entry':'Add calories',`<form id="cf">
+ <div class="seg"><button type="button" data-act="cfMode" data-m="food">🔍 From food</button><button type="button" data-act="cfMode" data-m="manual">✏️ Enter manually</button></div>
+ <div class="fld" id="cfFoodBox"><label>What did you eat?</label><textarea name="food" rows="2" placeholder="e.g. 4oz steak, 1 cup rice, 1 tbsp butter" autocomplete="off" autocapitalize="off">${esc(v('food'))}</textarea>
  <div id="nutri"></div>${sampleFn?`<button type="button" class="btn ai" data-act="calAI">✨ Estimate with Claude</button>`:''}</div>
- <div class="frow"><div class="fld"><label>Calories (kcal)</label><input type="number" inputmode="numeric" name="kcal" value="${v('kcal')}" required></div><div class="fld"><label>Date</label><input type="date" name="date" value="${x.date}" required></div></div>
+ <div class="frow"><div class="fld"><label>Calories (kcal)</label><input type="number" inputmode="numeric" name="kcal" value="${v('kcal')}" placeholder="from macros if blank"></div><div class="fld"><label>Date</label><input type="date" name="date" value="${x.date}" required></div></div>
  <div class="fld"><label>Meal</label><input name="label" list="meallist" value="${esc(v('label'))}" placeholder="Breakfast, Lunch…" autocomplete="off"><datalist id="meallist">${['Breakfast','Lunch','Dinner','Snack','Day total'].map(m=>`<option value="${m}">`).join('')}</datalist></div>
  <div class="mealchips">${['Breakfast','Lunch','Dinner','Snack','Day total'].map(m=>`<button type="button" class="pill ${m===x.label?'s-ip':'tag'}" data-act="calMeal" data-v="${m}">${m}</button>`).join('')}</div>
- <div class="frow3"><div class="fld"><label>Protein (g)</label><input type="number" inputmode="decimal" name="protein" value="${v('protein')}"></div><div class="fld"><label>Carbs (g)</label><input type="number" inputmode="decimal" name="carbs" value="${v('carbs')}"></div><div class="fld"><label>Fat (g)</label><input type="number" inputmode="decimal" name="fat" value="${v('fat')}"></div></div>
+ <div class="frow3"><div class="fld"><label>Protein (g)</label><input type="number" inputmode="decimal" name="protein" value="${v('protein')}"></div><div class="fld"><label>Carbs (g)</label><input type="number" inputmode="decimal" name="carbs" value="${v('carbs')}"></div><div class="fld"><label>Fat (g)</label><input type="number" inputmode="decimal" name="fat" value="${v('fat')}"></div></div><div class="nhint" id="cfHint" style="margin:-4px 0 10px"></div>
  <div class="btns">${id?`<button type="button" class="btn danger" data-act="calDel" data-id="${id}" data-back="${back?1:''}">Delete</button>`:''}<span class="sp"></span><button type="button" class="btn" data-act="${back?'fit':'close'}">Cancel</button><button class="btn pri">Save</button></div></form>`);
  const fm=$('#cf'),ta=fm.elements.food;let tmr;
  const run=()=>{const items=parseFood(ta.value);$('#nutri').innerHTML=nutRows(items);if(!cfManual&&items.some(i=>!i.miss))calFill(sumNut(items))};
  ta.addEventListener('input',()=>{cfManual=false;clearTimeout(tmr);tmr=setTimeout(run,180)});
- ['kcal','protein','carbs','fat'].forEach(n=>fm.elements[n].addEventListener('input',()=>{cfManual=true}));
+ ['kcal','protein','carbs','fat'].forEach(n=>fm.elements[n].addEventListener('input',()=>{cfManual=true;macroHint()}));
+ setCfMode(m0,true);
  if(x.food)run();
- if(!id&&!matchMedia('(max-width:720px)').matches)setTimeout(()=>ta.focus(),50);
- fm.onsubmit=e=>{e.preventDefault();const fd=new FormData(fm);const kcal=+fd.get('kcal');if(!kcal&&kcal!==0)return;if(fd.get('kcal')==='')return;
+ fm.onsubmit=e=>{e.preventDefault();const fd=new FormData(fm);const mk=macroK();const kcal=fd.get('kcal')===''?mk:+fd.get('kcal');if(!(kcal>0)){$('#cfHint').textContent='Enter calories, or protein/carbs/fat so I can work them out.';fm.elements.kcal.focus();return}
   const num=k=>fd.get(k)===''?'':+fd.get(k);
   const val={date:fd.get('date'),kcal,label:fd.get('label').trim()||'Food',food:fd.get('food').trim(),protein:num('protein'),carbs:num('carbs'),fat:num('fat')};
   if(id)Object.assign(x,val);else f.calories.push(Object.assign({id:uid()},val));
   calSel=val.date===today()?null:val.date;save();renderFitCard();back?openFitness(true):closeSheet()}}
+let cfEditing=false;
+function macroK(){const e=$('#cf').elements;return Math.round((+e.protein.value||0)*4+(+e.carbs.value||0)*4+(+e.fat.value||0)*9)}
+function macroHint(){const fm=$('#cf');if(!fm)return;const e=fm.elements,mk=macroK(),k=+e.kcal.value,h=$('#cfHint');if(!h)return;
+ if(!mk){h.textContent='';return}
+ if(e.kcal.value==='')h.textContent=`≈ ${fmt(mk,0)} kcal from your macros — that will be used if you leave Calories blank.`;
+ else if(Math.abs(mk-k)>Math.max(60,k*.15))h.textContent=`Heads up: your macros add up to ≈ ${fmt(mk,0)} kcal.`;else h.textContent=''}
+function setCfMode(m,init){const fm=$('#cf');if(!fm)return;const man=m==='manual';
+ $('#cfFoodBox').hidden=man;fm.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+ try{localStorage.setItem('sbos_cfmode',m)}catch(e){}
+ if(man&&!cfEditing&&!fm.elements.food.value.trim()){fm.elements.label.value='Day total';fm.querySelectorAll('.mealchips .pill').forEach(b=>b.className='pill '+(b.dataset.v==='Day total'?'s-ip':'tag'))}
+ if(!init&&!matchMedia('(max-width:720px)').matches)(man?fm.elements.kcal:fm.elements.food).focus();
+ else if(init&&!cfEditing&&!matchMedia('(max-width:720px)').matches)setTimeout(()=>(man?fm.elements.kcal:fm.elements.food).focus(),60);
+ macroHint()}
 function calFill(t){const e=$('#cf').elements;e.kcal.value=Math.round(t.kcal);e.protein.value=t.p?Math.round(t.p):'';e.carbs.value=t.c?Math.round(t.c):'';e.fat.value=t.f?Math.round(t.f):''}
 function calAI(el){const fm=$('#cf');if(!fm||!sampleFn)return;const txt=fm.elements.food.value.trim();const box=$('#nutri');
  if(!txt){box.innerHTML='<div class="nhint">Type what you ate first, then tap Estimate.</div>';return}
@@ -1387,6 +1418,17 @@ function calAI(el){const fm=$('#cf');if(!fm||!sampleFn)return;const txt=fm.eleme
  aiNutrition(txt).then(items=>{if(!$('#cf'))return;box.innerHTML=nutRows(items,true);cfManual=false;calFill(sumNut(items))})
  .catch(e=>{if(!$('#cf'))return;const c=e&&e.code;box.insertAdjacentHTML('beforeend',`<div class="nhint">${c==='not_granted'||c==='sampling_disabled'?'Claude isn’t allowed on this page, so only the built-in food list works.':c==='rate_limited'?'Too many requests. Try again in a minute.':'Couldn’t get an estimate. Try rewording it, or enter the calories yourself.'}</div>`);if(c==='not_granted'||c==='sampling_disabled'){sampleFn=null;el.remove()}})
  .finally(()=>{if(el.isConnected){el.disabled=false;el.textContent='✨ Estimate with Claude'}})}
+
+/* ---------- collapsible sections ---------- */
+let COL={};try{COL=JSON.parse(localStorage.getItem('sbos_col')||'{}')||{}}catch(e){}
+function saveCol(){try{localStorage.setItem('sbos_col',JSON.stringify(COL))}catch(e){}}
+function initCollapse(){document.querySelectorAll('.block').forEach(b=>{const bh=b.querySelector(':scope > .bh');if(!bh||bh.querySelector('.ctog'))return;
+ const t=(bh.querySelector('span:not(.sp)')||bh).textContent.trim();const key=b.id||('k-'+t.toLowerCase().replace(/[^a-z]+/g,'-'));b.dataset.ck=key;bh.dataset.act='collapse';bh.title='Tap to collapse or expand';
+ const btn=document.createElement('button');btn.className='ctog';btn.type='button';btn.dataset.act='collapse';btn.setAttribute('aria-label','Collapse or expand '+t);
+ btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';bh.appendChild(btn);
+ setCollapsed(b,!!COL[key])})}
+function setCollapsed(b,on){b.classList.toggle('collapsed',on);const btn=b.querySelector(':scope > .bh .ctog');if(btn)btn.setAttribute('aria-expanded',String(!on))}
+function collapseAll(on){document.querySelectorAll('.block[data-ck]').forEach(b=>{setCollapsed(b,on);if(on)COL[b.dataset.ck]=1;else delete COL[b.dataset.ck]});saveCol()}
 
 /* ---------- actions ---------- */
 let wipeArm=false;
@@ -1417,8 +1459,12 @@ document.addEventListener('click',e=>{
   case 'nav':document.getElementById(el.dataset.to).scrollIntoView({behavior:'smooth',block:'start'});break;
   case 'quote':openQuote();break;
   case 'settings':openSettings();break;
+  case 'collapse':{const b=el.closest('.block');if(!b||!b.dataset.ck)break;const on=!b.classList.contains('collapsed');setCollapsed(b,on);if(on)COL[b.dataset.ck]=1;else delete COL[b.dataset.ck];saveCol();break}
+  case 'colAll':collapseAll(true);closeSheet();break;
+  case 'expAll':collapseAll(false);closeSheet();break;
+  case 'cfMode':setCfMode(el.dataset.m);break;
   case 'fit':openFitness();break;
-  case 'calAdd':openCalForm(null,!!el.closest('.sheet'),el.dataset.d);break;
+  case 'calAdd':openCalForm(null,!!el.closest('.sheet'),el.dataset.d,el.dataset.mode);break;
   case 'calEdit':openCalForm(id,!!el.closest('.sheet'));break;
   case 'calRange':calRange=+el.dataset.v;openFitness(true);break;
   case 'calDay':calSel=el.dataset.d===today()?null:el.dataset.d;openFitness(true);break;
@@ -1451,7 +1497,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
 let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(renderCal,200)});
 
 /* ---------- boot ---------- */
-buildClock();tickClock();renderAll();setSync('local','Saved on this device');
+initCollapse();buildClock();tickClock();renderAll();setSync('local','Saved on this device');
 setInterval(()=>{tickClock();tickPomo()},1000);
 setInterval(renderTimeProg,60000);
 (function(){const m=location.hash.match(/^#connect=(.+)$/);if(!m)return;
