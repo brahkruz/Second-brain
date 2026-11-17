@@ -335,6 +335,37 @@ table.ht{border-collapse:separate;border-spacing:4px;width:100%}
 .seg{display:grid;grid-template-columns:1fr 1fr;background:#141212;border:1px solid var(--line);border-radius:11px;padding:3px;margin-bottom:14px}
 .seg button{padding:8px 6px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted)}
 .seg button.on{background:linear-gradient(135deg,#ff5a35,#c8170e);color:#fff}
+/* health */
+.hrings{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;padding:4px 0 8px}
+.hring{display:flex;flex-direction:column;align-items:center;gap:4px}
+.hring svg{width:min(110px,100%)}
+.hring span{font-size:13px;font-weight:600;color:var(--muted)}
+.hrings.big .hring svg{width:min(130px,100%)}.hrings.big .hring span{font-size:15px;color:var(--text)}
+.hsum{display:grid;gap:2px;width:100%;text-align:left;border-top:1px solid var(--line);padding-top:6px}
+.hsum div{display:flex;justify-content:space-between;gap:10px;padding:6px 2px;font-size:13px;flex-wrap:wrap}
+.hsum span{color:var(--muted)}.hsum b{font-weight:600}
+.hfoot{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:11.5px;color:var(--dim);margin-top:6px;flex-wrap:wrap}
+.hempty{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:6px}
+.hempty .hei{font-size:34px}.hempty b{display:block;font-size:15px}.hempty span{font-size:12.5px;color:var(--muted)}
+.hnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.hnav div{text-align:center}.hnav b{display:block;font:400 30px/1 'Instrument Serif',serif}.hnav span{font-size:12px;color:var(--muted)}
+.hins{font-size:14px;line-height:1.55;background:linear-gradient(135deg,rgba(139,140,248,.1),rgba(62,207,142,.06));border-color:#34345a}
+.hins b{color:#fff}
+.hcard{display:grid;grid-template-columns:minmax(0,1fr) 46%;gap:12px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin-bottom:10px}
+.hlb{font-size:13px;color:var(--muted)}
+.hval{font:700 30px/1.15 'Space Grotesk',sans-serif;margin:4px 0 4px;white-space:nowrap}.hval small{font-size:.5em;color:var(--muted);font-weight:500;margin-left:4px}
+.hst{font-size:13px;font-weight:600}.hst.up{color:#8cb2ff}.hst.ok{color:#5fdca3}.hst.dn{color:#ff9a72}.hst.nb{color:var(--dim);font-weight:500}
+.hsp{width:100%;height:64px;display:block;overflow:visible}
+.hsp-empty{font-size:11px;color:var(--dim);text-align:center}
+.hlegend{display:flex;flex-wrap:wrap;gap:12px;font-size:11px;color:var(--muted);margin-top:6px}
+.hlegend i{display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.guide{padding-left:20px;font-size:13px;line-height:1.55;color:#d9d1cd}.guide>li{margin-bottom:12px}.guide ul{padding-left:16px;margin:4px 0}.guide li li{margin-bottom:5px}
+.guide i{color:var(--ember);font-style:normal;font-weight:600}
+.guide code,.cprow code{background:#141212;border:1px solid var(--line);border-radius:6px;padding:1px 5px;font:500 11.5px 'JetBrains Mono',monospace;word-break:break-all}
+.cprow{display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap}.cprow code{flex:1;min-width:0;padding:6px 8px}
+.hdbg{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}.hdbg summary{cursor:pointer;font-weight:600;font-size:13px}
+.hraw{font-size:11.5px;margin:8px 0}.hraw code{display:block;margin-top:4px;background:#141212;border:1px solid var(--line);border-radius:8px;padding:8px;font:500 10.5px 'JetBrains Mono',monospace;word-break:break-all;color:var(--muted)}.hraw.bad b{color:#ff7a6e}
+@media(max-width:720px){.hcard{grid-template-columns:minmax(0,1fr) 44%;padding:13px 14px}.hval{font-size:26px}.hempty{grid-template-columns:auto 1fr}.hempty .btn{grid-column:1/-1}}
 /* dbs */
 .dbs .grp{padding:4px 0;border-bottom:1px solid var(--line)}
 .dbs .grp:last-child{border:0}
@@ -382,7 +413,23 @@ table.ht{border-collapse:separate;border-spacing:4px;width:100%}
 .hint{font-size:12px;color:var(--muted);margin:0 0 12px}
 
 /* responsive */
-@media(max-width:1120px){
+@media(max-width:1240px){
+ .grid{grid-template-columns:215px minmax(0,1fr) 255px;gap:16px}
+ .col{gap:16px}
+ .clock{width:170px;height:170px}
+ .areas{grid-template-columns:repeat(auto-fill,minmax(128px,1fr))}
+ .projs{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+ .duo{grid-template-columns:1fr}
+ .due{min-width:0}
+ #habits .week7 i{display:none}
+ .bh>span:not(.sp){white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+ .bh .add{white-space:nowrap}
+ .grid>.col:not(:nth-child(2)) .bh .add{font-size:0;padding:2px 8px}
+ .grid>.col:not(:nth-child(2)) .bh .add::before{content:"+";font-size:14px;font-weight:700}
+ #tools span.mt{display:none}
+}
+@media(min-width:861px) and (max-width:1240px){.fitgrid{grid-template-columns:1fr 1fr}.hrings .hring svg{width:min(96px,100%)}}
+@media(max-width:860px){
  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
  .col{display:contents}
  .wide{grid-column:1/-1}
@@ -465,6 +512,7 @@ table.ht{border-collapse:separate;border-spacing:4px;width:100%}
     <div class="bb"><div class="tabs" id="taskTabs"></div><div id="tasks"></div></div></div>
    <div class="block wide o6" id="b-track"><div class="bh">${I.repeat}<span>Habit tracker</span><span class="sp"></span><button class="add" data-act="new" data-t="habit">+ New</button></div>
     <div class="bb"><div class="trkbar" id="trkbar"></div><div class="tstats" id="trkstats"></div><div class="trk" id="tracker"></div></div></div>
+   <div class="block wide o6" id="b-health"><div class="bh">${I.pulse}<span>Health</span><span class="sp"></span><button class="add" data-act="health">Open</button></div><div class="bb" id="healthcard"></div></div>
    <div class="block wide o6" id="b-fit"><div class="bh">${I.dumbbell}<span>Fitness</span><span class="sp"></span><button class="add" data-act="fitWeight">+ Weight</button><button class="add" data-act="fitWorkout">+ Workout</button><button class="add" data-act="calAdd">+ Food</button></div><div class="bb"><div class="fitgrid" id="fitcard"></div></div></div>
    <div class="block wide o8"><div class="bh">${I.grid}<span>Life areas</span><span class="sp"></span><button class="add" data-act="new" data-t="area">+ New</button></div><div class="bb"><div class="areas" id="areas"></div></div></div>
    <div class="block wide o9"><div class="bh">${I.rocket}<span>Active projects</span><span class="sp"></span><button class="add" data-act="new" data-t="project">+ New</button></div>
@@ -511,6 +559,7 @@ const I={
  target:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg>',
  db:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>',
  dumbbell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6.5 6.5v11M3.5 9v6M17.5 6.5v11M20.5 9v6M6.5 12h11"/></svg>',
+ pulse:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg>',
  cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'
 };
 document.querySelectorAll('.bh').forEach(el=>{el.innerHTML=el.innerHTML.replace(/\$\{I\.(\w+)\}/g,(_,k)=>I[k]||'')});
@@ -619,7 +668,7 @@ async function push(){
  }catch(e){syncError(e)}
  writing=false;if(again){again=false;push()}
 }
-function maybePull(){if(document.visibilityState==='visible'&&gh&&!dirty&&!writing&&Date.now()-lastPull>8000)pull()}
+function maybePull(){if(gh)syncHealth();if(document.visibilityState==='visible'&&gh&&!dirty&&!writing&&Date.now()-lastPull>8000)pull()}
 document.addEventListener('visibilitychange',maybePull);addEventListener('pageshow',maybePull);addEventListener('focus',maybePull);
 setInterval(()=>{if(!document.querySelector('#ov.on'))maybePull()},45000);
 addEventListener('online',()=>{if(gh&&dirty)push()});
@@ -847,7 +896,7 @@ function renderCal(){
  $('#cal').innerHTML=h;
 }
 
-function renderAll(){renderTasks();renderAreas();renderProjects();renderMedia();renderNotes();renderTools();renderQuote();renderHabits();renderTracker();renderFitCard();renderGoals();renderDbs();renderCal();renderPomo();renderTimeProg()}
+function renderAll(){renderTasks();renderAreas();renderProjects();renderMedia();renderNotes();renderTools();renderQuote();renderHabits();renderTracker();renderHealthCard();renderFitCard();renderGoals();renderDbs();renderCal();renderPomo();renderTimeProg()}
 
 /* ---------- forms ---------- */
 const F={
@@ -862,7 +911,7 @@ const F={
  track:{name:'Song',coll:'tracks',fields:[['title','Title','text'],['artist','Artist','text'],['url','Link (Spotify, YouTube…) — optional','text']],def:()=>({})}
 };
 const ov=$('#ov'),sheet=$('#sheet');
-function openSheet(title,body){sheet.className='sheet';sheet.innerHTML=`<div class="sh"><h2>${title}</h2><button class="iconbtn" data-act="close" aria-label="Close">✕</button></div><div class="sc">${body}</div>`;ov.classList.add('on')}
+function openSheet(title,body){sheet.className='sheet';sheet.dataset.view='';sheet.innerHTML=`<div class="sh"><h2>${title}</h2><button class="iconbtn" data-act="close" aria-label="Close">✕</button></div><div class="sc">${body}</div>`;ov.classList.add('on')}
 function closeSheet(){ov.classList.remove('on');sheet.innerHTML=''}
 function fieldHTML([k,l,type,opts],v){
  let inp;
@@ -1430,6 +1479,180 @@ function initCollapse(){document.querySelectorAll('.block').forEach(b=>{const bh
 function setCollapsed(b,on){b.classList.toggle('collapsed',on);const btn=b.querySelector(':scope > .bh .ctog');if(btn)btn.setAttribute('aria-expanded',String(!on))}
 function collapseAll(on){document.querySelectorAll('.block[data-ck]').forEach(b=>{setCollapsed(b,on);if(on)COL[b.dataset.ck]=1;else delete COL[b.dataset.ck]});saveCol()}
 
+/* ---------- health (Apple Health via iPhone Shortcut → private repo /health/*.json) ---------- */
+const HC={sleep:'#8b8cf8',energy:'#3ecf8e',act:'#ff6b3d'};
+const health=()=>{if(!S.health)S.health={};const H=S.health;H.days=H.days||{};H.sleep=H.sleep||{};H.imported=H.imported||[];H.raw=H.raw||[];if(!H.sleepGoal)H.sleepGoal=8;if(!H.shortcut)H.shortcut='Health to Second Brain';return H};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const durStr=m=>{m=Math.round(Math.abs(+m||0));const h=Math.floor(m/60),mm=m%60;return h?`${h}h ${mm}m`:`${mm}m`};
+const clk=mins=>{mins=((Math.round(mins)%1440)+1440)%1440;let h=Math.floor(mins/60),m=mins%60;const ap=h>=12?'PM':'AM';h=h%12||12;return `${h}:${pad(m)} ${ap}`};
+const minOfDay=iso=>{const t=new Date(iso);return isNaN(t)?null:t.getHours()*60+t.getMinutes()};
+const bedMin=s=>{if(!s||!s.bed)return null;const m=minOfDay(s.bed);return m==null?null:(m-720+1440)%1440};      // minutes after noon
+const wakeAN=s=>{if(!s||!s.wake)return null;const m=minOfDay(s.wake);return m==null?null:(m-720+1440)%1440};
+const median=a=>{const b=a.slice().sort((x,y)=>x-y);const n=b.length;return n?(n%2?b[(n-1)/2]:(b[n/2-1]+b[n/2])/2):null};
+function baseline(v){if(v.length<5)return null;const m=v.reduce((a,b)=>a+b,0)/v.length;const sd=Math.sqrt(v.reduce((a,b)=>a+(b-m)**2,0)/v.length)||Math.abs(m)*.05||1;return{m,sd}}
+function prevVals(date,get,n=30){const o=[];for(let i=1;i<=n;i++){const v=get(addDays(-i,date));if(v!=null&&!isNaN(v))o.push(+v)}return o}
+function hNum(v){if(v==null)return null;const m=String(v).replace(/,/g,'').match(/-?\d+(\.\d+)?/);return m?+m[0]:null}
+function hDur(v){if(v==null||String(v).trim()==='')return null;const s=String(v).toLowerCase().replace(/,/g,'');
+ const h=s.match(/(\d+(?:\.\d+)?)\s*(?:h|hr|hrs|hour|hours)\b/),m=s.match(/(\d+(?:\.\d+)?)\s*(?:m|min|mins|minute|minutes)\b/),sc=s.match(/(\d+(?:\.\d+)?)\s*(?:s|sec|secs|second|seconds)\b/);
+ if(h||m||sc)return (h?+h[1]*60:0)+(m?+m[1]:0)+(sc?+sc[1]/60:0);
+ const c=s.match(/(\d+):(\d{2})(?::(\d{2}))?/);if(c)return +c[1]*60+ +c[2]+(c[3]?c[3]/60:0);
+ const n=hNum(s);if(n==null)return null;return n<=24?n*60:n/60}       // bare numbers: ≤24 = hours, otherwise seconds
+const validISO=v=>{if(!v)return null;const t=new Date(String(v).trim());return isNaN(t)?null:t.toISOString()};
+function importHealth(txt,name){const H=health();let j;
+ try{j=JSON.parse(String(txt).replace(/\r?\n/g,' ').replace(/,\s*([}\]])/g,'$1'))}catch(e){H.raw.unshift({name,at:Date.now(),txt:String(txt).slice(0,1500),err:1});H.raw=H.raw.slice(0,6);return false}
+ H.raw.unshift({name,at:Date.now(),txt:JSON.stringify(j).slice(0,1500)});H.raw=H.raw.slice(0,6);
+ const sent=new Date(j.sent||Date.now());const sentT=isNaN(sent)?Date.now():sent.getTime();
+ const date=/^\d{4}-\d{2}-\d{2}/.test(String(j.date||''))?String(j.date).slice(0,10):ymd(new Date(sentT));
+ const d=H.days[date]||(H.days[date]={});
+ if(!d.sent||sentT>=d.sent){let any=false;for(const k of ['steps','active','resting','hrv','rhr']){const v=hNum(j[k]);if(v!=null&&v>0){d[k]=Math.round(v*10)/10;any=true}}if(any)d.sent=sentT}
+ const asleep=hDur(j.asleep);
+ if(asleep!=null&&asleep>=30){const wake=validISO(j.wake);const wd=wake?ymd(new Date(wake)):date;const cur=H.sleep[wd];
+  if(!cur||asleep>=cur.asleep-1){const r=x=>{const v=hDur(x);return v==null?null:Math.round(v)};H.sleep[wd]={asleep:Math.round(asleep),deep:r(j.deep),rem:r(j.rem),awake:r(j.awake),bed:validISO(j.bed),wake}}}
+ return true}
+function ghReq(path,opt={}){return fetch(`https://api.github.com/repos/${encodeURIComponent(gh.owner)}/${encodeURIComponent(gh.repo)}/contents/${path}`,Object.assign({cache:'no-store'},opt,{headers:{Authorization:'Bearer '+gh.token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}}))}
+let hSyncing=false,hLast=0,hFolder=null;
+async function syncHealth(force){if(!gh||hSyncing)return;if(!force&&Date.now()-hLast<20000)return;hSyncing=true;hLast=Date.now();
+ try{const r=await ghReq('health');if(r.status===404){hFolder=false;return}if(!r.ok)return;hFolder=true;
+  const list=(await r.json()).filter(f=>f.type==='file'&&/\.json$/i.test(f.name)).sort((a,b)=>a.name.localeCompare(b.name));
+  const H=health(),seen=new Set(H.imported);let changed=false;
+  for(const f of list){if(seen.has(f.name))continue;const g=await ghReq('health/'+encodeURIComponent(f.name));if(!g.ok)continue;
+   const j=await g.json();let txt;try{txt=b64d(j.content||'')}catch(e){continue}importHealth(txt,f.name);H.imported.push(f.name);changed=true}
+  if(H.imported.length>1200)H.imported=H.imported.slice(-800);
+  if(changed){save();renderHealthCard();if(sheet.dataset.view==='health')openHealth(true)}
+  const cut=addDays(-4);for(const f of list){if(seen.has(f.name)&&f.name.slice(0,10)<cut)ghReq('health/'+encodeURIComponent(f.name),{method:'DELETE',body:JSON.stringify({message:'Clean up imported health file',sha:f.sha})}).catch(()=>{})}
+ }catch(e){}finally{hSyncing=false}}
+function latestHealthDate(){const H=health(),t=today();if(H.sleep[t]||H.days[t])return t;const ks=Object.keys(H.days).concat(Object.keys(H.sleep)).filter(k=>k<=t).sort();return ks.pop()||null}
+/* scores */
+function sleepScore(date){const H=health(),s=H.sleep[date];if(!s)return null;const goal=H.sleepGoal*60;let sc=Math.min(1,s.asleep/goal)*60,w=60;
+ if(s.deep!=null&&s.rem!=null&&(s.deep+s.rem)>0){sc+=Math.min(1,((s.deep+s.rem)/s.asleep)/.4)*20;w+=20}
+ if(s.awake!=null){sc+=Math.max(0,1-(s.awake/Math.max(1,s.asleep))/.15)*10;w+=10}
+ const b=bedMin(s),bs=prevVals(date,d=>bedMin(H.sleep[d]),14);if(b!=null&&bs.length>=4){sc+=Math.max(0,1-Math.abs(b-median(bs))/120)*10;w+=10}
+ return Math.round(sc/w*100)}
+function sleepBalance(date){const H=health();let t=0,n=0;for(let i=0;i<7;i++){const s=H.sleep[addDays(-i,date)];if(s){t+=s.asleep-H.sleepGoal*60;n++}}return n?t:null}
+function energyScore(date){const H=health(),d=H.days[date]||{};const ss=sleepScore(date);let e=ss!=null?ss*.5+25:50,inputs=ss!=null?1:0;
+ if(d.hrv){const bl=baseline(prevVals(date,x=>H.days[x]&&H.days[x].hrv,30));if(bl){e+=clamp((d.hrv-bl.m)/bl.sd,-2,2)*10;inputs++}}
+ if(d.rhr){const bl=baseline(prevVals(date,x=>H.days[x]&&H.days[x].rhr,30));if(bl){e-=clamp((d.rhr-bl.m)/bl.sd,-2,2)*8;inputs++}}
+ const bal=sleepBalance(date);if(bal!=null&&bal<-300)e-=6;
+ return inputs?Math.round(clamp(e,1,99)):null}
+function activityScore(date){const H=health(),d=H.days[date];if(!d||(!d.active&&!d.steps))return null;
+ const ba=baseline(prevVals(date,x=>H.days[x]&&H.days[x].active,30)),bs=baseline(prevVals(date,x=>H.days[x]&&H.days[x].steps,30));
+ const a=d.active?Math.min(1,d.active/((ba?ba.m:500)*1.4))*70:0,s=d.steps?Math.min(1,d.steps/((bs?bs.m*1.3:10000)))*30:0;return Math.round(clamp(a+s,0,100))}
+const HM={
+ asleep:{label:'Time asleep',ic:'🌙',get:d=>{const s=health().sleep[d];return s?s.asleep:null},fmt:durStr},
+ sscore:{label:'Sleep score',ic:'💤',get:sleepScore,fmt:v=>Math.round(v),unit:'%'},
+ bed:{label:'Bedtime',ic:'🛏️',dir:['Later than usual','Earlier than usual'],get:d=>bedMin(health().sleep[d]),fmt:v=>clk(v+720)},
+ wake:{label:'Wake time',ic:'⏰',dir:['Later than usual','Earlier than usual'],get:d=>wakeAN(health().sleep[d]),fmt:v=>clk(v+720)},
+ deep:{label:'Deep sleep',ic:'🌊',get:d=>{const s=health().sleep[d];return s&&s.deep!=null?s.deep:null},fmt:durStr},
+ rem:{label:'REM sleep',ic:'🌀',get:d=>{const s=health().sleep[d];return s&&s.rem!=null?s.rem:null},fmt:durStr},
+ energy:{label:'Energy score',ic:'⚡',get:energyScore,fmt:v=>Math.round(v),unit:'%'},
+ hrv:{label:'Resting HRV',ic:'〰️',get:d=>{const x=health().days[d];return x&&x.hrv?x.hrv:null},fmt:v=>fmt(v,1),unit:'ms'},
+ rhr:{label:'Resting HR',ic:'🤍',get:d=>{const x=health().days[d];return x&&x.rhr?x.rhr:null},fmt:v=>fmt(v,1),unit:'bpm'},
+ total:{label:'Total energy burned',ic:'🔥',live:1,get:d=>{const x=health().days[d];return x&&(x.active||x.resting)?(x.active||0)+(x.resting||0):null},fmt:v=>fmt(v,0),unit:'kcal'},
+ active:{label:'Active energy',ic:'🏃',live:1,get:d=>{const x=health().days[d];return x&&x.active?x.active:null},fmt:v=>fmt(v,0),unit:'kcal'},
+ steps:{label:'Steps',ic:'👟',live:1,get:d=>{const x=health().days[d];return x&&x.steps?x.steps:null},fmt:v=>fmt(v,0)},
+ activity:{label:'Activity score',ic:'📈',live:1,get:activityScore,fmt:v=>Math.round(v),unit:'%'}
+};
+/* visuals */
+function ring(p,col,label){const v=p==null?0:clamp(p,0,100),r=40,C=2*Math.PI*r;
+ return `<div class="hring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="${r}" fill="none" stroke="#2a2523" stroke-width="10"/>${p==null?'':`<circle cx="50" cy="50" r="${r}" fill="none" stroke="${col}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${(v/100*C).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 50 50)" style="filter:drop-shadow(0 0 5px ${col}88)"/>`}<text x="50" y="58" text-anchor="middle" font-size="23" font-weight="700" fill="#efe9e6" font-family="Space Grotesk,sans-serif">${p==null?'—':Math.round(v)+'%'}</text></svg><span>${label}</span></div>`}
+function hSpark(series,bl,col){const W=200,H=64,n=series.length,ok=series.filter(p=>p.v!=null);if(ok.length<2)return `<div class="hsp-empty">${ok.length?'Trend after 2+ days':'No data yet'}</div>`;
+ const vals=ok.map(p=>p.v).concat(bl?[bl.m-bl.sd,bl.m+bl.sd]:[]);let lo=Math.min(...vals),hi=Math.max(...vals);const pd=(hi-lo)*.12||1;lo-=pd;hi+=pd;
+ const X=i=>5+i/(n-1)*(W-16),Y=v=>5+(1-(v-lo)/(hi-lo))*(H-10);
+ const band=bl?`<rect x="5" y="${Y(bl.m+bl.sd).toFixed(1)}" width="${W-16}" height="${Math.max(2,Y(bl.m-bl.sd)-Y(bl.m+bl.sd)).toFixed(1)}" rx="4" fill="${col}" opacity=".14"/>`:'';
+ let d='',pen=false;series.forEach((p,i)=>{if(p.v==null){pen=false;return}d+=(pen?'L':'M')+X(i).toFixed(1)+' '+Y(p.v).toFixed(1);pen=true});
+ const dots=series.map((p,i)=>p.v!=null&&(series[i-1]||{}).v==null&&(series[i+1]||{}).v==null?`<circle cx="${X(i).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="1.8" fill="${col}"/>`:'').join('');
+ let li=-1;series.forEach((p,i)=>{if(p.v!=null)li=i});const lx=X(li),ly=Y(series[li].v);
+ return `<svg viewBox="0 0 ${W} ${H}" class="hsp">${band}<path d="${d}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>${dots}<circle cx="${lx}" cy="${ly}" r="7" fill="${col}" opacity=".25"/><circle cx="${lx}" cy="${ly}" r="3.6" fill="#1a1817" stroke="${col}" stroke-width="2.2"/></svg>`}
+function hStatus(v,bl,M,date){if(v==null)return '<span class="hst nb">No reading</span>';if(!bl)return '<span class="hst nb">Building your baseline…</span>';const z=(v-bl.m)/bl.sd;
+ if(M&&M.live&&date===today())return `<span class="hst nb">So far today · ${Math.round(v/bl.m*100)}% of your usual</span>`;
+ if(M&&M.dir)return Math.abs(z)<1?'<span class="hst ok">✓ Usual time</span>':`<span class="hst up">${z>0?'↓ '+M.dir[0]:'↑ '+M.dir[1]}</span>`;
+ return z>=1?'<span class="hst up">↑ Above normal</span>':z<=-1?'<span class="hst dn">↓ Below normal</span>':'<span class="hst ok">✓ Normal range</span>'}
+function hCard(k,date,col){const M=HM[k],v=M.get(date),bl=baseline(prevVals(date,M.get,30)),series=[];for(let i=29;i>=0;i--){const d=addDays(-i,date);const x=M.get(d);series.push({d,v:x==null?null:+x})}
+ return `<div class="hcard"><div class="hcl"><div class="hlb">${M.ic} ${M.label}</div><div class="hval">${v==null?'—':M.fmt(v)}${v!=null&&M.unit?`<small>${M.unit}</small>`:''}</div>${hStatus(v,bl,M,date)}</div><div class="hcr">${hSpark(series,bl,col)}</div></div>`}
+function balanceCard(date){const H=health(),b=sleepBalance(date);const series=[];for(let i=13;i>=0;i--){const d=addDays(-i,date);series.push({d,v:H.sleep[d]?H.sleep[d].asleep-H.sleepGoal*60:null})}
+ return `<div class="hcard"><div class="hcl"><div class="hlb">🏦 Sleep balance · 7 nights</div><div class="hval" style="color:${b==null?'inherit':b<0?'#ff9a72':'#5fdca3'}">${b==null?'—':(b<0?'−':'+')+durStr(b)}</div>${b==null?'<span class="hst nb">No sleep data</span>':b<-30?`<span class="hst dn">↓ Debt vs ${H.sleepGoal}h goal</span>`:'<span class="hst ok">✓ On track</span>'}</div><div class="hcr">${hSpark(series,{m:0,sd:30},'#ff9a72')}</div></div>`}
+function schedChart(date){const H=health(),N=14,goal=H.sleepGoal*60,nights=[];for(let i=N-1;i>=0;i--){const d=addDays(-i,date);nights.push({d,s:H.sleep[d]})}
+ const ok=nights.filter(x=>x.s&&bedMin(x.s)!=null&&wakeAN(x.s)!=null);if(!ok.length)return '<div class="empty" style="padding:26px 0;text-align:center">Your bedtimes and wake times will show here after your first sync.</div>';
+ let lo=Math.floor((Math.min(...ok.map(x=>bedMin(x.s)))-30)/60)*60,hi=Math.ceil((Math.max(...ok.map(x=>wakeAN(x.s)))+30)/60)*60;if(hi-lo<360)hi=lo+360;
+ const W=340,Ht=200,L=44,R=8,T=8,B=20,cw=(W-L-R)/N,Y=v=>T+(v-lo)/(hi-lo)*(Ht-T-B);
+ let g='';for(let t=lo;t<=hi;t+=120){const y=Y(t).toFixed(1);g+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="rgba(255,255,255,.06)"/><text x="${L-6}" y="${+y+3}" font-size="9" fill="#675f5c" text-anchor="end">${clk(t+720).replace(':00','').replace(' ','')}</text>`}
+ const ab=median(ok.map(x=>bedMin(x.s))),aw=median(ok.map(x=>wakeAN(x.s)));
+ g+=`<line x1="${L}" x2="${W-R}" y1="${Y(ab)}" y2="${Y(ab)}" stroke="${HC.sleep}" stroke-dasharray="3 4" opacity=".6"/><line x1="${L}" x2="${W-R}" y1="${Y(aw)}" y2="${Y(aw)}" stroke="#f5b950" stroke-dasharray="3 4" opacity=".6"/>`;
+ nights.forEach((x,i)=>{const cx=L+i*cw+cw*.2,bw=cw*.6,sel=x.d===date;
+  if(x.s&&bedMin(x.s)!=null&&wakeAN(x.s)!=null){const y1=Y(bedMin(x.s)),y2=Y(wakeAN(x.s)),short=x.s.asleep<goal-60;
+   g+=`<rect x="${cx.toFixed(1)}" y="${y1.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(3,y2-y1).toFixed(1)}" rx="${Math.min(5,bw/2).toFixed(1)}" fill="url(#${short?'sgs':'sgl'})" ${sel?`stroke="#fff" stroke-width="1.5"`:''}/>`}
+  g+=`<text x="${(cx+bw/2).toFixed(1)}" y="${Ht-5}" font-size="9" text-anchor="middle" fill="${sel?'#efe9e6':'#675f5c'}" font-weight="${sel?700:400}">${'SMTWTFS'[parse(x.d).getDay()]}</text>`});
+ return `<svg viewBox="0 0 ${W} ${Ht}" style="width:100%;display:block;margin-top:8px"><defs><linearGradient id="sgl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#a5a6ff"/></linearGradient><linearGradient id="sgs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c4a3a"/><stop offset="1" stop-color="#ff9a72"/></linearGradient></defs>${g}</svg>
+ <div class="hlegend"><span><i style="background:${HC.sleep}"></i>Usual bedtime ${clk(ab+720)}</span><span><i style="background:#f5b950"></i>Usual wake ${clk(aw+720)}</span><span><i style="background:#ff9a72"></i>Short night</span></div>`}
+function insight(date){const H=health(),s=H.sleep[date],o=[];
+ if(s){const bl=baseline(prevVals(date,x=>H.sleep[x]&&H.sleep[x].asleep,30));let t=`You slept <b>${durStr(s.asleep)}</b>`;if(s.bed&&s.wake)t+=` (${clk(minOfDay(s.bed))} → ${clk(minOfDay(s.wake))})`;
+  if(bl){const df=s.asleep-bl.m;t+=Math.abs(df)<15?', right around your average.':df>0?`, ${durStr(df)} more than your average.`:`, ${durStr(df)} less than your average.`}else t+='.';o.push(t)}
+ const e=energyScore(date);if(e!=null)o.push(e>=70?'<b>Energy is high</b> — a good day to push a hard workout.':e>=45?'<b>Energy is moderate</b> — train normally and protect tonight’s sleep.':'<b>Energy is low</b> — keep training light and aim for an early night.');
+ const b=sleepBalance(date);if(b!=null&&b<-60)o.push(`You’re <b>${durStr(b)}</b> short of your ${H.sleepGoal}h goal over the last 7 nights.`);
+ return o.join(' ')}
+function hSyncLine(){const H=health();const last=Math.max(0,...Object.values(H.days).map(d=>d.sent||0));
+ if(!gh)return 'Connect GitHub in ⚙︎ Settings to sync';if(!last&&!Object.keys(H.sleep).length)return hFolder===false?'Waiting for your first sync from iPhone':'No health data yet';
+ const t=new Date(last);return 'Last iPhone sync: '+(ymd(t)===today()?'Today':ymd(t)===addDays(-1)?'Yesterday':t.toLocaleDateString(undefined,{month:'short',day:'numeric'}))+' '+t.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}
+function renderHealthCard(){const el=$('#healthcard');if(!el)return;const H=health();
+ if(!Object.keys(H.days).length&&!Object.keys(H.sleep).length){el.innerHTML=`<div class="hempty"><div class="hei">❤️</div><div><b>Connect Apple Health</b><span>Sync sleep, HRV, resting heart rate, steps and energy from your iPhone automatically.</span></div><button class="btn pri" data-act="hSetup">Set up auto-sync</button></div>`;return}
+ const date=latestHealthDate()||today(),s=H.sleep[date],d=H.days[date]||{},tot=HM.total.get(date);
+ el.innerHTML=`<button class="hrings" data-act="health">${ring(sleepScore(date),HC.sleep,'Sleep')}${ring(energyScore(date),HC.energy,'Energy')}${ring(activityScore(date),HC.act,'Activity')}</button>
+ <button class="hsum" data-act="health"><div><span>🌙 Last night</span><b>${s?durStr(s.asleep)+(s.bed&&s.wake?` · ${clk(minOfDay(s.bed))} – ${clk(minOfDay(s.wake))}`:''):'—'}</b></div>
+ <div><span>🔥 Energy burned</span><b>${tot?fmt(tot,0)+' kcal':'—'}${d.steps?` · ${fmt(d.steps,0)} steps`:''}</b></div>
+ <div><span>〰️ HRV · Resting HR</span><b>${d.hrv?fmt(d.hrv,0)+' ms':'—'} · ${d.rhr?fmt(d.rhr,0)+' bpm':'—'}</b></div></button>
+ <div class="hfoot"><span>${hSyncLine()}</span><button class="mini" data-act="hSync">⟳ Sync</button></div>`}
+let hDate=null;
+function openHealth(keep){const H=health(),date=hDate||latestHealthDate()||today(),sc=keep?sheet.scrollTop:0;
+ const dn=date===today()?'Today':date===addDays(-1)?'Yesterday':parse(date).toLocaleDateString(undefined,{weekday:'long'});const ins=insight(date);
+ openSheet('Health',`<div class="fx"><div class="hnav"><button class="iconbtn" data-act="hDay" data-d="-1" aria-label="Previous day">‹</button><div><b>${dn}</b><span>${parse(date).toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'})}</span></div><button class="iconbtn" data-act="hDay" data-d="1" aria-label="Next day" ${date>=today()?'disabled style="opacity:.3"':''}>›</button></div>
+ <div class="fcard hrings big">${ring(sleepScore(date),HC.sleep,'Sleep')}${ring(energyScore(date),HC.energy,'Energy')}${ring(activityScore(date),HC.act,'Activity')}</div>
+ ${ins?`<div class="fcard hins">✨ ${ins}</div>`:''}
+ <div class="fh2"><span>Sleep</span></div>
+ <div class="fcard"><div class="lbl">Sleep schedule · last 14 nights</div>${schedChart(date)}</div>
+ ${['asleep','sscore','bed','wake'].map(k=>hCard(k,date,HC.sleep)).join('')}${balanceCard(date)}${['deep','rem'].map(k=>hCard(k,date,HC.sleep)).join('')}
+ <div class="fh2"><span>Energy & recovery</span></div>${['energy','hrv','rhr'].map(k=>hCard(k,date,HC.energy)).join('')}
+ <div class="fh2"><span>Activity</span></div>${['total','active','steps','activity'].map(k=>hCard(k,date,HC.act)).join('')}
+ <div class="hfoot" style="margin-top:14px"><span>${hSyncLine()}</span><span style="display:flex;gap:6px"><button class="mini" data-act="hSync">⟳ Sync now</button><button class="mini" data-act="hSetup">Setup</button></span></div>
+ <p class="hint" style="margin-top:10px">Scores are this app’s own estimates from your Apple Health data, not Bevel’s. “Normal range” is your own average ± typical variation over the previous 30 days (needs 5+ days).</p></div>`);
+ sheet.classList.add('full');sheet.dataset.view='health';if(keep)sheet.scrollTop=sc}
+function shortcutGuide(){const o=gh?gh.owner:'YOUR-USERNAME',r=gh?gh.repo:'second-brain-data',H=health();
+ const url=`https://api.github.com/repos/${o}/${r}/contents/health/`;
+ const tpl='{"date":"⟨Day⟩","sent":"⟨Now⟩","asleep":"⟨Asleep⟩","deep":"⟨Deep⟩","rem":"⟨REM⟩","awake":"⟨Awake⟩","bed":"⟨Bedtime⟩","wake":"⟨Wake⟩","hrv":"⟨HRV⟩","rhr":"⟨RHR⟩","steps":"⟨Steps⟩","active":"⟨Active⟩","resting":"⟨Resting⟩"}';
+ const cp=(label,val,show)=>`<div class="cprow"><code>${esc(show||val)}</code><button type="button" class="mini" data-act="hCopy" data-v="${esc(val)}">Copy ${label}</button></div>`;
+ return `<ol class="guide">
+ <li><b>Open Shortcuts → + → name it “${esc(H.shortcut)}”.</b> Add the actions below in order. After each result you need later, add <i>Set Variable</i> with the name shown in <b>bold</b>.</li>
+ <li><b>Last night’s sleep</b><ul>
+  <li><i>Find Health Samples</i> where Type is <b>Sleep Analysis</b>, Start Date <b>is in the last 18 hours</b>, Value <b>is not In Bed</b>, Value <b>is not Awake</b>. Sort by Start Date, Oldest First → Set Variable <b>Sleep</b>.</li>
+  <li><i>Get Details of Health Samples</i> → <b>Duration</b> (of Sleep) → <i>Calculate Statistics</i> → <b>Sum</b> → Set Variable <b>Asleep</b>.</li>
+  <li><i>Get Item from List</i> → First Item (Sleep) → <i>Get Details</i> → <b>Start Date</b> → <i>Format Date</i> → ISO 8601 (Include Time on) → Set Variable <b>Bedtime</b>.</li>
+  <li><i>Get Item from List</i> → Last Item (Sleep) → <i>Get Details</i> → <b>End Date</b> → <i>Format Date</i> → ISO 8601 → Set Variable <b>Wake</b>.</li>
+  <li>Repeat the Find → Duration → Sum pattern with Value <b>is Deep</b> → <b>Deep</b>, Value <b>is REM</b> → <b>REM</b>, and Value <b>is Awake</b> → <b>Awake</b>.</li></ul></li>
+ <li><b>Recovery</b><ul>
+  <li><i>Find Health Samples</i> Type <b>Heart Rate Variability</b>, Start Date in the last 18 hours → <i>Calculate Statistics</i> <b>Average</b> → <b>HRV</b>.</li>
+  <li><i>Find Health Samples</i> Type <b>Resting Heart Rate</b>, Start Date in the last 2 days, Sort Latest First, Limit 1 → <b>RHR</b>.</li></ul></li>
+ <li><b>Today’s activity</b><ul>
+  <li><i>Find Health Samples</i> Type <b>Steps</b>, Start Date <b>is today</b> → <i>Calculate Statistics</i> <b>Sum</b> → <b>Steps</b>.</li>
+  <li>Same for <b>Active Energy</b> → <b>Active</b>, and <b>Resting Energy</b> → <b>Resting</b>.</li></ul></li>
+ <li><b>Send it</b><ul>
+  <li><i>Current Date</i> → <i>Format Date</i> Custom <code>yyyy-MM-dd</code> → <b>Day</b>; Format Date ISO 8601 → <b>Now</b>; Format Date Custom <code>yyyy-MM-dd-HHmmss</code> → <b>FileName</b>.</li>
+  <li><i>Text</i> — paste this, then replace each ⟨…⟩ with the matching variable:${cp('template',tpl,'{"date":"⟨Day⟩", … }')}</li>
+  <li><i>Base64 Encode</i> the Text (Line Breaks: None).</li>
+  <li><i>Get Contents of URL</i> — URL: paste this, then add the <b>FileName</b> variable and type <code>.json</code> after it:${cp('URL',url)}
+  Method <b>PUT</b>. Headers: <code>Authorization</code> = ${cp('header','Bearer '+(gh?gh.token:'YOUR-TOKEN'),'Bearer ••••••••')} and <code>Accept</code> = <code>application/vnd.github+json</code>. Request Body <b>JSON</b>: <code>message</code> (Text) = <code>Health sync</code>, <code>content</code> (Text) = <b>Base64 Encoded</b>.</li></ul></li>
+ <li><b>Make it automatic</b> (Shortcuts → Automation → +, choose <b>Run Immediately</b> each time):<ul>
+  <li><b>App → Bevel → Is Opened</b>. Best option: your phone is unlocked then, so Health can be read.</li>
+  <li><b>Time of Day</b> 9:00 AM and 10:00 PM, daily, as a backup.</li></ul>
+  Health data can’t be read while the iPhone is locked. A locked run sends blanks, and the app ignores them rather than overwriting good data.</li>
+ <li>Run it once by hand, come back here and tap <b>⟳ Sync now</b>. The numbers should appear within a few seconds.</li></ol>`}
+function openHealthSetup(){const H=health();
+ openSheet('Health setup',`<p class="hint">Your iPhone sends a small file to your private <b>${esc(gh?gh.repo:'data')}</b> repo using an Apple Shortcut. This app reads it, adds it to your history, and tidies up old files.${gh?'':' <b>Connect GitHub in ⚙︎ Settings first.</b>'}</p>
+ <form id="hsf"><div class="frow"><div class="fld"><label>Sleep goal (hours)</label><input type="number" step="0.25" inputmode="decimal" name="goal" value="${H.sleepGoal}"></div><div class="fld"><label>Shortcut name</label><input name="sc" value="${esc(H.shortcut)}"></div></div><div class="btns" style="margin:-4px 0 14px"><span class="sp"></span><button class="btn pri">Save</button></div></form>
+ <div class="fh2" style="font:400 24px/1 'Instrument Serif',serif;margin:6px 0 10px">Build the Shortcut</div>${shortcutGuide()}
+ <details class="hdbg"><summary>Troubleshooting · recent syncs</summary>${H.raw.length?H.raw.map(x=>`<div class="hraw ${x.err?'bad':''}"><b>${esc(x.name)}</b>${x.err?' — couldn’t be read':''}<code>${esc(x.txt)}</code></div>`).join(''):'<p class="hint">Nothing received yet.</p>'}
+ <div class="fld" style="margin-top:10px"><label>Paste health data by hand (JSON, same format as the template)</label><textarea id="hpaste" rows="3"></textarea><div class="btns"><span class="sp"></span><button type="button" class="btn" data-act="hPaste">Import</button></div></div></details>
+ <div id="smsg" class="hint"></div>`);
+ $('#hsf').onsubmit=e=>{e.preventDefault();const fd=new FormData(e.target);const g=+fd.get('goal');if(g>3&&g<14)H.sleepGoal=g;H.shortcut=fd.get('sc').trim()||'Health to Second Brain';save();renderHealthCard();$('#smsg').textContent='Saved.'}}
+
 /* ---------- actions ---------- */
 let wipeArm=false;
 document.addEventListener('click',e=>{
@@ -1464,6 +1687,12 @@ document.addEventListener('click',e=>{
   case 'expAll':collapseAll(false);closeSheet();break;
   case 'cfMode':setCfMode(el.dataset.m);break;
   case 'fit':openFitness();break;
+  case 'health':hDate=null;openHealth();break;
+  case 'hDay':{const cur=hDate||latestHealthDate()||today();const n=addDays(+el.dataset.d,cur);hDate=n>today()?today():n;openHealth(true);break}
+  case 'hSetup':openHealthSetup();break;
+  case 'hSync':{hLast=0;if(!gh){openSettings();break}const H=health();try{location.href='shortcuts://run-shortcut?name='+encodeURIComponent(H.shortcut)}catch(err){}setTimeout(()=>syncHealth(true),1200);break}
+  case 'hCopy':{const v=el.dataset.v;navigator.clipboard.writeText(v).then(()=>{el.textContent='Copied ✓';setTimeout(()=>{el.textContent='Copy'},1500)},()=>{el.textContent='Copy blocked'});break}
+  case 'hPaste':{const t=$('#hpaste').value.trim();if(!t)break;const ok=importHealth(t,'manual-'+Date.now());save();renderHealthCard();$('#smsg').textContent=ok?'Imported.':'That couldn’t be read as JSON.';break}
   case 'calAdd':openCalForm(null,!!el.closest('.sheet'),el.dataset.d,el.dataset.mode);break;
   case 'calEdit':openCalForm(id,!!el.closest('.sheet'));break;
   case 'calRange':calRange=+el.dataset.v;openFitness(true);break;
@@ -1503,7 +1732,7 @@ setInterval(renderTimeProg,60000);
 (function(){const m=location.hash.match(/^#connect=(.+)$/);if(!m)return;
  try{const g=JSON.parse(b64d(decodeURIComponent(m[1])));if(g&&g.owner&&g.repo&&g.token){gh=g;localStorage.setItem(GH_KEY,JSON.stringify(gh));setDirty(false)}}catch(e){}
  history.replaceState(null,'',location.pathname+location.search)})();
-if(gh)pull();
+if(gh){pull();setTimeout(()=>syncHealth(true),1500)}
 </script>
 </body>
 </html>
