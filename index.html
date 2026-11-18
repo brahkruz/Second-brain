@@ -1482,7 +1482,9 @@ function collapseAll(on){document.querySelectorAll('.block[data-ck]').forEach(b=
 
 /* ---------- health (Apple Health via iPhone Shortcut → private repo /health/*.json) ---------- */
 const HC={sleep:'#8b8cf8',energy:'#3ecf8e',act:'#ff6b3d'};
-const health=()=>{if(!S.health)S.health={};const H=S.health;H.days=H.days||{};H.sleep=H.sleep||{};H.naps=H.naps||{};H.imported=H.imported||[];H.raw=H.raw||[];if(!H.sleepGoal)H.sleepGoal=8;if(!H.shortcut)H.shortcut='Health to Second Brain';return H};
+const health=()=>{if(!S.health)S.health={};const H=S.health;H.days=H.days||{};H.sleep=H.sleep||{};H.naps=H.naps||{};H.imported=H.imported||[];H.raw=H.raw||[];if(!H.sleepGoal)H.sleepGoal=8;if(!H.shortcut)H.shortcut='Health to Second Brain';
+ if(!H.mig1){H.mig1=1;for(const d of Object.keys(H.naps)){H.naps[d]=H.naps[d].filter(n=>{if(n.m<180)return true;const wd=ymd(new Date(n.e));const cur=H.sleep[wd];if(!cur||cur.asleep<n.m)H.sleep[wd]={asleep:n.m,deep:null,rem:null,awake:null,bed:n.s,wake:n.e};return false});if(!H.naps[d].length)delete H.naps[d]}}
+ return H};
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const durStr=m=>{m=Math.round(Math.abs(+m||0));const h=Math.floor(m/60),mm=m%60;return h?`${h}h ${mm}m`:`${mm}m`};
 const clk=mins=>{mins=((Math.round(mins)%1440)+1440)%1440;let h=Math.floor(mins/60),m=mins%60;const ap=h>=12?'PM':'AM';h=h%12||12;return `${h}:${pad(m)} ${ap}`};
@@ -1500,8 +1502,9 @@ function hDur(v){if(v==null||String(v).trim()==='')return null;const s=String(v)
  const n=hNum(s);if(n==null)return null;return n<=24?n*60:n/60}       // bare numbers: ≤24 = hours, otherwise seconds
 const validISO=v=>{if(!v)return null;const t=new Date(String(v).trim());return isNaN(t)?null:t.toISOString()};
 /* ---------- health v2: simple text format from a 9-action Shortcut ---------- */
-function parseAnyDate(s){s=String(s||'').replace(/[  ]/g,' ').trim();if(!s)return null;let t=new Date(s);if(!isNaN(t))return t;
- const s2=s.replace(/\s+at\s+/i,' ');t=new Date(s2);if(!isNaN(t))return t;
+function parseAnyDate(s){s=String(s||'').replace(/[\u202f\u00a0]/g,' ').replace(/[\u27e8\u27e9\u3008\u3009\u2039\u203a<>]/g,'').trim();if(!s)return null;let t;
+ if(/^\d{4}-\d{2}-\d{2}/.test(s)){t=new Date(s);if(!isNaN(t))return t}
+ const s2=s.replace(/\s+at\s+/i,' ');
  const MO={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};const ap=(h,x)=>x?h%12+(/p/i.test(x)?12:0):h;
  let m=s2.match(/([A-Za-z]{3})[a-z]*\.?\s+(\d{1,2}),?\s+(\d{4}),?\s+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AP]\.?M\.?)?/i);
  if(m&&MO[m[1].toLowerCase()]!=null)return new Date(+m[3],MO[m[1].toLowerCase()],+m[2],ap(+m[4],m[7]),+m[5],+(m[6]||0));
@@ -1509,13 +1512,13 @@ function parseAnyDate(s){s=String(s||'').replace(/[  ]/g,' ').trim();if(!s)re
  if(m&&MO[m[2].toLowerCase()]!=null)return new Date(+m[3],MO[m[2].toLowerCase()],+m[1],ap(+m[4],m[7]),+m[5],+(m[6]||0));
  m=s2.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4}),?\s+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AP]\.?M\.?)?/i);
  if(m){let y=+m[3];if(y<100)y+=2000;return new Date(y,+m[1]-1,+m[2],ap(+m[4],m[7]),+m[5],+(m[6]||0))}
- return null}
+ t=new Date(s2);return isNaN(t)?null:t}
 function parseV2(txt){
  const sec={};let cur=null;
  String(txt).replace(/\r/g,'').split('\n').forEach(line=>{const l=line.trim();if(!l)return;
   const hm=l.match(/^(SENT|SLEEP STAGE|SLEEP START|SLEEP END|SLEEP SOURCE|HRV|RHR|STEPS|STEPS SOURCE|ACTIVE|ACTIVE SOURCE|RESTING)\s*:\s*(.*)$/i);
-  if(hm){cur=hm[1].toUpperCase();sec[cur]=sec[cur]||[];if(hm[2].trim())sec[cur].push(hm[2].trim());return}
-  if(/^SB-HEALTH/i.test(l))return;if(cur)sec[cur].push(l)});
+  if(hm){cur=hm[1].toUpperCase();sec[cur]=sec[cur]||[];const v=hm[2].replace(/[\u27e8\u27e9\u3008\u3009\u2039\u203a]/g,'').trim();if(v)sec[cur].push(v);return}
+  if(/^SB-HEALTH/i.test(l))return;const v=l.replace(/[\u27e8\u27e9\u3008\u3009\u2039\u203a]/g,'').trim();if(cur&&v)sec[cur].push(v)});
  const L=k=>sec[k]||[];
  const sent=parseAnyDate(L('SENT')[0])||new Date();
  const out={date:ymd(sent),sent:sent.toISOString()};
@@ -1538,12 +1541,15 @@ function parseV2(txt){
   const R=rows.filter(r=>r.s===best&&r.k!=='bed').sort((x,y)=>x.a-y.a);
   const sessions=[];R.forEach(r=>{const last=sessions[sessions.length-1];if(last&&r.a-last.end<=90*60000){last.rows.push(r);last.end=new Date(Math.max(last.end,r.b))}else sessions.push({rows:[r],end:r.b})});
   const mins=(rr,k)=>rr.filter(r=>k?r.k===k:(r.k!=='awake')).reduce((t,r)=>t+(r.b-r.a),0)/60000;
-  const main=sessions.sort((x,y)=>mins(y.rows)-mins(x.rows))[0];
+  const sum=x=>{const sl=x.rows.filter(r=>r.k!=='awake');if(!sl.length)return null;const staged=x.rows.some(r=>r.k==='deep'||r.k==='rem');
+   return{asleep:Math.round(mins(x.rows))+' min',awake:Math.round(mins(x.rows,'awake'))+' min',deep:staged?Math.round(mins(x.rows,'deep'))+' min':null,rem:staged?Math.round(mins(x.rows,'rem'))+' min':null,bed:sl[0].a.toISOString(),wake:new Date(Math.max(...sl.map(r=>+r.b))).toISOString()}};
+  const nightS=sessions.filter(x=>mins(x.rows)>=180);out.nights=nightS.map(sum).filter(Boolean);
+  const main=nightS.sort((x,y)=>y.end-x.end)[0];
   if(main){const sl=main.rows.filter(r=>r.k!=='awake');if(sl.length){
    out.asleep=Math.round(mins(main.rows))+' min';out.awake=Math.round(mins(main.rows,'awake'))+' min';
    const staged=main.rows.some(r=>r.k==='deep'||r.k==='rem');if(staged){out.deep=Math.round(mins(main.rows,'deep'))+' min';out.rem=Math.round(mins(main.rows,'rem'))+' min'}
    out.bed=sl[0].a.toISOString();out.wake=new Date(Math.max(...sl.map(r=>+r.b))).toISOString()}}
-  out.naps=sessions.filter(x=>x!==main).map(x=>{const sl=x.rows.filter(r=>r.k!=='awake');return sl.length?{s:sl[0].a.toISOString(),e:new Date(Math.max(...sl.map(r=>+r.b))).toISOString(),m:Math.round(mins(x.rows))}:null}).filter(n=>n&&n.m>=10)}
+  out.naps=sessions.filter(x=>mins(x.rows)<180).map(x=>{const sl=x.rows.filter(r=>r.k!=='awake');return sl.length?{s:sl[0].a.toISOString(),e:new Date(Math.max(...sl.map(r=>+r.b))).toISOString(),m:Math.round(mins(x.rows))}:null}).filter(n=>n&&n.m>=10)}
  return out}
 
 function importHealth(txt,name){const H=health();let j;
@@ -1554,7 +1560,10 @@ function importHealth(txt,name){const H=health();let j;
  const date=/^\d{4}-\d{2}-\d{2}/.test(String(j.date||''))?String(j.date).slice(0,10):ymd(new Date(sentT));
  const d=H.days[date]||{};
  if(!d.sent||sentT>=d.sent){let any=false;for(const k of ['steps','active','resting','hrv','rhr']){const v=hNum(j[k]);if(v!=null&&v>0){d[k]=Math.round(v*10)/10;any=true}}if(any){d.sent=sentT;H.days[date]=d}}
- const asleep=hDur(j.asleep);
+ const putNight=n=>{const asleep=hDur(n.asleep);if(asleep==null||asleep<30)return;const wake=validISO(n.wake);const wd=wake?ymd(new Date(wake)):date;const cur=H.sleep[wd];
+  if(!cur||asleep>=cur.asleep-1||(cur.deep==null&&n.deep!=null)){const r=x=>{const v=hDur(x);return v==null?null:Math.round(v)};H.sleep[wd]={asleep:Math.round(asleep),deep:r(n.deep),rem:r(n.rem),awake:r(n.awake),bed:validISO(n.bed),wake}}};
+ if(Array.isArray(j.nights)&&j.nights.length)j.nights.forEach(putNight);
+ const asleep=Array.isArray(j.nights)&&j.nights.length?null:hDur(j.asleep);
  if(asleep!=null&&asleep>=30){const wake=validISO(j.wake);const wd=wake?ymd(new Date(wake)):date;const cur=H.sleep[wd];
   if(!cur||asleep>=cur.asleep-1){const r=x=>{const v=hDur(x);return v==null?null:Math.round(v)};H.sleep[wd]={asleep:Math.round(asleep),deep:r(j.deep),rem:r(j.rem),awake:r(j.awake),bed:validISO(j.bed),wake}}}
  if(Array.isArray(j.naps))j.naps.forEach(n=>{const s=validISO(n.s),e=validISO(n.e),m=Math.round(+n.m||0);if(!s||!e||m<10)return;const k=ymd(new Date(s));const L=H.naps[k]||(H.naps[k]=[]);
