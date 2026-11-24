@@ -484,6 +484,11 @@ button:active:not(:disabled){transform:scale(.94);transition-duration:.06s}
 .rest.done{border-color:rgba(62,207,142,.5);color:#8ff0c3}.rest.done b{font:600 14px 'Space Grotesk',sans-serif}
 .rbar{position:absolute;left:0;top:0;height:3px;width:100%;background:rgba(255,255,255,.06)}.rbar i{display:block;height:100%;background:linear-gradient(90deg,#ff6b3d,#ffb347);transition:width .25s linear}
 @media(max-width:720px){.whead{grid-template-columns:1fr 128px}.wsets{grid-template-columns:26px minmax(52px,.8fr) 1fr 1fr 40px;gap:5px}.wsets input{font-size:16px}}
+.trow.ev .evic{display:grid;place-items:center;width:22px}
+.tnew{display:flex;gap:4px}.tnew .newrow{width:auto}
+.chip.ev{border-color:#5b8cff;background:#1e2233}.chip.ev b{color:#9db8ff;font-weight:700}
+#b-cal .cell{min-height:86px}
+#b-cal .calbar h3{font-size:22px;min-width:140px}
 /* dbs */
 .dbs .grp{padding:4px 0;border-bottom:1px solid var(--line)}
 .dbs .grp:last-child{border:0}
@@ -624,8 +629,16 @@ button:active:not(:disabled){transform:scale(.94);transition-duration:.06s}
 
   <!-- MAIN -->
   <div class="col">
-   <div class="block wide o4" id="b-tasks"><div class="bh">${I.check}<span>Tasks this week</span><span class="sp"></span><button class="add" data-act="new" data-t="task">+ New</button></div>
+   <div class="block wide o4" id="b-tasks"><div class="bh">${I.check}<span>Tasks/Events</span><span class="sp"></span><button class="add" data-act="new" data-t="task">+ Task</button><button class="add" data-act="new" data-t="event">+ Event</button></div>
     <div class="bb"><div class="tabs" id="taskTabs"></div><div id="tasks"></div></div></div>
+   <div class="block wide o4" id="b-cal">
+    <div class="bh">${I.cal}<span>Calendar</span><span class="sp"></span><button class="add" data-act="new" data-t="event">+ Event</button></div>
+    <div class="bb">
+     <div class="calbar"><h3 id="calTitle"></h3><div class="tabs" id="calTabs" style="margin:0"></div><span class="sp"></span>
+      <button class="nb" data-act="calnav" data-d="-1">‹</button><button class="nb" data-act="calnav" data-d="0">Today</button><button class="nb" data-act="calnav" data-d="1">›</button></div>
+     <div class="cal" id="cal"></div>
+    </div>
+   </div>
    <div class="block wide o6" id="b-journal"><div class="bh">${I.pen}<span>Daily journal</span><span class="sp"></span><button class="add" data-act="jToday">Today</button></div><div class="bb" id="journal"></div></div>
    <div class="block wide o6" id="b-track"><div class="bh">${I.repeat}<span>Habit tracker</span><span class="sp"></span><button class="add" data-act="new" data-t="habit">+ New</button></div>
     <div class="bb"><div class="trkbar" id="trkbar"></div><div class="tstats" id="trkstats"></div><div class="trk" id="tracker"></div></div></div>
@@ -648,14 +661,6 @@ button:active:not(:disabled){transform:scale(.94);transition-duration:.06s}
   </div>
  </div>
 
- <div class="calwrap block" id="b-cal">
-  <div class="bh">${I.cal}<span>Month calendar</span><span class="sp"></span><button class="add" data-act="new" data-t="task">+ New</button></div>
-  <div class="bb">
-   <div class="calbar"><h3 id="calTitle"></h3><div class="tabs" id="calTabs" style="margin:0"></div><span class="sp"></span>
-    <button class="nb" data-act="calnav" data-d="-1">‹</button><button class="nb" data-act="calnav" data-d="0">Today</button><button class="nb" data-act="calnav" data-d="1">›</button></div>
-   <div class="cal" id="cal"></div>
-  </div>
- </div>
 </div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="flg" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff3d1f"/><stop offset=".55" stop-color="#ff8a3c"/><stop offset="1" stop-color="#ffd77a"/></linearGradient></defs></svg>
@@ -813,7 +818,7 @@ function seed(){
  ];
  const TL=[['Excalidraw','https://excalidraw.com'],['DeepL','https://www.deepl.com'],['Coolors','https://coolors.co'],['Photopea','https://www.photopea.com'],['Unsplash','https://unsplash.com'],['Google Calendar','https://calendar.google.com']].map(([name,url])=>({id:uid(),name,url}));
  const TR=[['Weightless','Marconi Union'],['Experience','Ludovico Einaudi'],['Intro','The xx'],['Midnight City','M83'],['Svefn-g-englar','Sigur Rós']].map(([title,artist])=>({id:uid(),title,artist,url:''}));
- return {v:1,journal:{},fitness:{unit:'lbs',goal:230,start:null,weights:[],workouts:[]},areas:A,projects:P,tasks:T,notes:N,habits:H,goals:G,media:M,tools:TL,tracks:TR,quote:{text:'Discipline today is freedom tomorrow.',author:'Second Brain'},pomoLog:{},ui:{taskView:'week',projView:'Active',calMode:'tasks'}};
+ return {v:1,events:[],journal:{},fitness:{unit:'lbs',goal:230,start:null,weights:[],workouts:[]},areas:A,projects:P,tasks:T,notes:N,habits:H,goals:G,media:M,tools:TL,tracks:TR,quote:{text:'Discipline today is freedom tomorrow.',author:'Second Brain'},pomoLog:{},ui:{taskView:'week',projView:'Active',calMode:'tasks'}};
 }
 function normalize(s){const d=seed();for(const k of Object.keys(d)){if(s[k]===undefined)s[k]=d[k]}s.ui=Object.assign({taskView:'week',projView:'Active',calMode:'tasks',trackView:'week'},s.ui||{});return s}
 let S;
@@ -943,17 +948,23 @@ function dueHTML(d){
  if(n===1)return '<span class="due now">Tomorrow</span>';
  return `<span class="due">In ${n} days</span>`;
 }
+const evTime=t=>{if(!t)return '';const [H,M]=String(t).split(':').map(Number);if(isNaN(H))return '';const h12=H%12||12;return `${h12}:${pad(M||0)} ${H>=12?'PM':'AM'}`};
 function renderTasks(){
- const v=S.ui.taskView;
- $('#taskTabs').innerHTML=[['week','This week'],['all','All'],['prio','By priority'],['done','Done']].map(([k,l])=>`<button class="${v===k?'on':''}" data-act="view" data-k="taskView" data-v="${k}">${l}</button>`).join('');
- let L=S.tasks.slice();
- const byDue=(a,b)=>(a.due||'9999').localeCompare(b.due||'9999');
- if(v==='week')L=L.filter(t=>t.status!=='Done'&&(!t.due||diffDays(t.due)<=7)).sort(byDue);
- else if(v==='prio')L=L.filter(t=>t.status!=='Done').sort((a,b)=>PR[a.priority]-PR[b.priority]||byDue(a,b));
- else if(v==='done')L=L.filter(t=>t.status==='Done').sort(byDue);
- else L.sort((a,b)=>(a.status==='Done')-(b.status==='Done')||byDue(a,b));
- $('#tasks').innerHTML=(L.length?L.map(t=>{const dn=t.status==='Done';return `<div class="trow ${dn?'done':''}"><button class="chk ${dn?'on':''}" data-act="toggleTask" data-id="${t.id}" aria-label="Complete"></button>
-  <div class="tmain"><button class="tt" data-act="edit" data-t="task" data-id="${t.id}">${esc(t.title)}</button><div class="meta"><span class="pill p-${t.priority}">${t.priority}</span>${dueHTML(t.due)}<button class="pill ${statusCls(t.status)}" data-act="cycle" data-id="${t.id}" title="Change status">${t.status}</button></div></div></div>`}).join(''):`<div class="empty">${v==='done'?'Nothing completed yet.':'All clear this week.'}</div>`)+`<button class="newrow" data-act="new" data-t="task">+ New task</button>`;
+ const v=S.ui.taskView;if(!S.events)S.events=[];
+ $('#taskTabs').innerHTML=[['week','Next 7 days'],['all','All'],['prio','By priority'],['events','Events'],['done','Done']].map(([k,l])=>`<button class="${v===k?'on':''}" data-act="view" data-k="taskView" data-v="${k}">${l}</button>`).join('');
+ const byDue=(a,b)=>(a.d||'9999').localeCompare(b.d||'9999')||(a.t||'99').localeCompare(b.t||'99');
+ const T=S.tasks.map(t=>({k:'task',o:t,d:t.due,t:''})),E=S.events.map(x=>({k:'event',o:x,d:x.date,t:x.time||''})),P=S.projects.filter(p=>p.due&&p.status!=='Done').map(p=>({k:'proj',o:p,d:p.due,t:''}));
+ let L;
+ if(v==='week')L=[...T.filter(x=>x.o.status!=='Done'&&(!x.d||diffDays(x.d)<=7)),...E.filter(x=>diffDays(x.d)>=0&&diffDays(x.d)<=7),...P.filter(x=>diffDays(x.d)<=7)].sort(byDue);
+ else if(v==='prio')L=T.filter(x=>x.o.status!=='Done').sort((a,b)=>PR[a.o.priority]-PR[b.o.priority]||byDue(a,b));
+ else if(v==='events')L=E.filter(x=>diffDays(x.d)>=0).sort(byDue);
+ else if(v==='done')L=T.filter(x=>x.o.status==='Done').sort(byDue);
+ else L=[...T.sort((a,b)=>(a.o.status==='Done')-(b.o.status==='Done')),...E.filter(x=>diffDays(x.d)>=0),...P].sort((a,b)=>((a.k==='task'&&a.o.status==='Done')-(b.k==='task'&&b.o.status==='Done'))||byDue(a,b));
+ $('#tasks').innerHTML=(L.length?L.map(x=>{const t=x.o;
+  if(x.k==='event')return `<div class="trow ev"><span class="evic">${tile('calendar','blue',11)}</span><div class="tmain"><button class="tt" data-act="edit" data-t="event" data-id="${t.id}">${esc(t.title)}</button><div class="meta">${t.where?`<span class="pill tag">${esc(t.where)}</span>`:''}${t.time?`<span class="pill s-ns">${evTime(t.time)}${t.end?' – '+evTime(t.end):''}</span>`:''}${dueHTML(t.date)}</div></div></div>`;
+  if(x.k==='proj')return `<div class="trow ev"><span class="evic">${tile('rocket','violet',11)}</span><div class="tmain"><button class="tt" data-act="edit" data-t="project" data-id="${t.id}"><span style="color:var(--muted)">Deadline · </span>${esc(t.title)}</button><div class="meta"><span class="pill tag">Project</span>${dueHTML(t.due)}</div></div></div>`;
+  const dn=t.status==='Done';return `<div class="trow ${dn?'done':''}"><button class="chk ${dn?'on':''}" data-act="toggleTask" data-id="${t.id}" aria-label="Complete"></button>
+  <div class="tmain"><button class="tt" data-act="edit" data-t="task" data-id="${t.id}">${esc(t.title)}</button><div class="meta"><span class="pill p-${t.priority}">${t.priority}</span>${dueHTML(t.due)}<button class="pill ${statusCls(t.status)}" data-act="cycle" data-id="${t.id}" title="Change status">${t.status}</button></div></div></div>`}).join(''):`<div class="empty">${v==='done'?'Nothing completed yet.':v==='events'?'No upcoming events.':'All clear for the next 7 days.'}</div>`)+`<div class="tnew"><button class="newrow" data-act="new" data-t="task">+ New task</button><button class="newrow" data-act="new" data-t="event">+ New event</button></div>`;
 }
 
 /* ---------- render: areas & projects ---------- */
@@ -1079,7 +1090,7 @@ function renderDbs(){$('#dbs').innerHTML=DBS.map(g=>`<div class="grp">${g.map(([
 function renderCal(){
  const mode=S.ui.calMode;
  $('#calTitle').textContent=`${MON[calMonth.getMonth()]} ${calMonth.getFullYear()}`;
- $('#calTabs').innerHTML=[['tasks','Tasks'],['projects','Projects'],['notes','Notes'],['habits','Habits'],['fitness','Workouts'],['journal','Journal']].map(([k,l])=>`<button class="${mode===k?'on':''}" data-act="view" data-k="calMode" data-v="${k}">${l}</button>`).join('');
+ $('#calTabs').innerHTML=[['tasks','Tasks & events'],['projects','Projects'],['notes','Notes'],['habits','Habits'],['fitness','Workouts'],['journal','Journal']].map(([k,l])=>`<button class="${mode===k?'on':''}" data-act="view" data-k="calMode" data-v="${k}">${l}</button>`).join('');
  const first=new Date(calMonth);const start=new Date(first);start.setDate(1-first.getDay());
  const mobile=matchMedia('(max-width:720px)').matches;const maxChips=mobile?2:3;
  let h=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="dh">${d}</div>`).join('');
@@ -1087,7 +1098,7 @@ function renderCal(){
   const d=new Date(start);d.setDate(start.getDate()+i);const k=ymd(d);
   if(i===35&&d.getMonth()!==calMonth.getMonth())break;
   let items=[];
-  if(mode==='tasks')items=S.tasks.filter(t=>t.due===k).sort((a,b)=>PR[a.priority]-PR[b.priority]).map(t=>`<button class="chip ${t.priority} ${t.status==='Done'?'cdone':''}" data-act="edit" data-t="task" data-id="${t.id}">${esc(t.title)}</button>`);
+  if(mode==='tasks')items=(S.events||[]).filter(x=>x.date===k).sort((a,b)=>(a.time||'99').localeCompare(b.time||'99')).map(x=>`<button class="chip ev" data-act="edit" data-t="event" data-id="${x.id}">${x.time?`<b>${evTime(x.time).replace(':00','').replace(' ','').toLowerCase()}</b> `:''}${esc(x.title)}</button>`).concat(S.tasks.filter(t=>t.due===k).sort((a,b)=>PR[a.priority]-PR[b.priority]).map(t=>`<button class="chip ${t.priority} ${t.status==='Done'?'cdone':''}" data-act="edit" data-t="task" data-id="${t.id}">${esc(t.title)}</button>`));
   else if(mode==='projects')items=S.projects.filter(p=>p.due===k).map(p=>`<button class="chip proj" data-act="edit" data-t="project" data-id="${p.id}">${svgI('rocket',10)} ${esc(p.title)}</button>`);
   else if(mode==='notes')items=S.notes.filter(n=>n.created===k).map(n=>`<button class="chip note" data-act="edit" data-t="note" data-id="${n.id}">${esc(n.emoji||'')} ${esc(n.title)}</button>`);
   else if(mode==='journal')items=jHas(k)?[`<button class="chip note" data-act="jOpen" data-d="${k}">${(jEntry(k).mood?moodFace(jEntry(k).mood,11):'')} ${esc(((jEntry(k).text||jEntry(k).grateful||'').trim()).slice(0,40))}</button>`]:[];
@@ -1103,6 +1114,7 @@ function renderAll(){renderJournal();renderTasks();renderAreas();renderProjects(
 
 /* ---------- forms ---------- */
 const F={
+ event:{name:'Event',coll:'events',fields:[['title','Title','text'],['date','Date','date'],['time','Starts (optional)','time'],['end','Ends (optional)','time'],['where','Location (optional)','text'],['area','Life area','area'],['note','Notes','textarea']],def:()=>({date:today(),time:''})},
  task:{name:'Task',coll:'tasks',fields:[['title','Title','text'],['priority','Priority','select',['High','Medium','Low']],['due','Due date','date'],['status','Status','select',['Not started','In progress','Done']],['area','Life area','area'],['project','Project','project']],def:()=>({priority:'Medium',status:'Not started',due:today()})},
  note:{name:'Note',coll:'notes',fields:[['emoji','Icon','emoji'],['title','Title','text'],['area','Life area','area'],['body','Note','textarea']],def:()=>({emoji:'i:note',created:today()})},
  project:{name:'Project',coll:'projects',fields:[['title','Title','text'],['status','Status','select',['Active','To-do','On hold','Done']],['due','Deadline','date'],['area','Life area','area'],['progress','Progress % (used when no tasks are linked)','number']],def:()=>({status:'Active'})},
@@ -2033,6 +2045,10 @@ function openMedia(id,keep){const m=S.media.find(x=>x.id===id);if(!m)return;m.no
  $('#mnf').onsubmit=e=>{e.preventDefault();const f=e.target,fd=new FormData(f),t=fd.get('text').trim();if(!t)return;const ref=fd.get('ref').trim();
   if(f.dataset.edit){const n=m.notes.find(x=>x.id===f.dataset.edit);if(n){n.text=t;n.ref=ref}}else m.notes.push({id:uid(),at:Date.now(),ref,text:t});
   save();renderMedia();openMedia(id,true)}}
+function openDay(k){const E=(S.events||[]).filter(x=>x.date===k).sort((a,b)=>(a.time||'99').localeCompare(b.time||'99')),T=S.tasks.filter(t=>t.due===k),P=S.projects.filter(p=>p.due===k);
+ const row=(ic,t,act,typ,id,sub)=>`<button class="lrow" data-act="${act}" data-t="${typ}" data-id="${id}"><span class="em">${ic}</span><span class="nm">${esc(t)}</span><span class="mt">${sub||''}</span></button>`;
+ openSheet(parse(k).toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'}),`<div class="btns" style="margin:0 0 12px"><button class="btn pri" data-act="dayNew" data-t="event" data-d="${k}">+ Event</button><button class="btn" data-act="dayNew" data-t="task" data-d="${k}">+ Task</button></div>
+ ${E.length||T.length||P.length?E.map(x=>row(tile('calendar','blue',11),x.title,'edit','event',x.id,[evTime(x.time),x.where].filter(Boolean).join(' · '))).join('')+T.map(t=>row(tile('tasks','green',11),t.title,'edit','task',t.id,t.status)).join('')+P.map(p=>row(tile('rocket','violet',11),'Deadline · '+p.title,'edit','project',p.id,p.status)).join(''):'<div class="empty">Nothing planned this day.</div>'}`)}
 /* ---------- actions ---------- */
 let wipeArm=false;
 document.addEventListener('click',e=>{
@@ -2107,7 +2123,8 @@ document.addEventListener('click',e=>{
   case 'pstart':ac();if(pomo.running){pomo.running=false}else{pomo.running=true;pomo.end=Date.now()+pomo.left*1000}renderPomo();break;
   case 'preset':pomo.running=false;pomo.left=PM[pomo.mode]*60;renderPomo();break;
   case 'calnav':{const d=+el.dataset.d;if(d===0){calMonth=new Date();calMonth.setDate(1)}else calMonth.setMonth(calMonth.getMonth()+d);renderCal();break}
-  case 'day':{if(e.target.closest('.chip'))break;if(S.ui.calMode==='journal'){jDate=el.dataset.d>=today()?null:el.dataset.d;renderJournal();document.getElementById('b-journal').scrollIntoView({behavior:'smooth'});break}if(S.ui.calMode==='fitness'){openWorkoutForm(null,false,{date:el.dataset.d});break}const opts={preset:{due:el.dataset.d}};if(S.ui.calMode==='projects')openForm('project',null,opts);else openForm('task',null,opts);break}
+  case 'day':{if(e.target.closest('.chip'))break;if(S.ui.calMode==='journal'){jDate=el.dataset.d>=today()?null:el.dataset.d;renderJournal();document.getElementById('b-journal').scrollIntoView({behavior:'smooth'});break}if(S.ui.calMode==='fitness'){openWorkoutForm(null,false,{date:el.dataset.d});break}if(S.ui.calMode==='projects'){openForm('project',null,{preset:{due:el.dataset.d}});break}openDay(el.dataset.d);break}
+  case 'dayNew':{const k=el.dataset.d;if(el.dataset.t==='event')openForm('event',null,{preset:{date:k}});else openForm('task',null,{preset:{due:k}});break}
   case 'copyBackup':navigator.clipboard.writeText(JSON.stringify(S)).then(()=>$('#smsg').textContent='Backup copied.',()=>$('#smsg').textContent='Copy was blocked by the browser.');break;
   case 'import':try{S=normalize(JSON.parse($('#imp').value));save();renderAll();$('#smsg').textContent='Restored.'}catch(err){$('#smsg').textContent='That backup could not be read.'}break;
   case 'wipe':if(!wipeArm){wipeArm=true;el.textContent='Tap again to confirm';setTimeout(()=>{wipeArm=false},4000)}else{wipeArm=false;const ui=S.ui;S={v:1,fitness:S.fitness,areas:S.areas,projects:[],tasks:[],notes:[],habits:[],goals:[],media:[],tools:[],tracks:[],quote:S.quote,pomoLog:{},ui};save();closeSheet();renderAll()}break;
